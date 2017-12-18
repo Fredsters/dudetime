@@ -23,6 +23,7 @@
     "babel-core": "^6.26.0",
     "babel-preset-expo": "^4.0.0",
     "expo": "^23.0.4",
+    "moment": "^2.20.0",
     "native-base": "^2.3.3",
     "prop-types": "^15.6.0",
     "react": "16.0.0",
