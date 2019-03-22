@@ -2,7 +2,8 @@ import React from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import {fetchMates} from "../redux/MateActions";
 import {connect} from "react-redux";
-import MateItem from './../components/MateItem';
+import CustomRow from './../components/CustomRow';
+import MateItem from "../components/MateItem";
 
 // import {MateItem} from "./../components/MateItem"
 
@@ -32,6 +33,7 @@ class MateList extends React.Component {
             <View style={styles.container}>
                 <FlatList
                     data={mates}
+                    keyExtractor={(item) => item._id}
                     renderItem={({item}) =>
                         <MateItem
                             title={item.title}
