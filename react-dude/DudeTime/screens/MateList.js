@@ -1,17 +1,20 @@
 import React from 'react';
-import {FlatList, Text, View, StyleSheet} from 'react-native';
+import {FlatList, StyleSheet, Text, View} from 'react-native';
 import {fetchMates} from "../redux/MateActions";
 import {connect} from "react-redux";
-import MateItem from "../components/MateItem";
+import MateItem from './../components/MateItem';
+
+// import {MateItem} from "./../components/MateItem"
 
 class MateList extends React.Component {
-    static navigationOptions = {
-        header: null,
-    };
+    // static navigationOptions = {
+    //     header: null,
+    // };
 
     componentDidMount() {
         this.props.dispatch(fetchMates());
     }
+
 
     render() {
         const {error, loading, mates} = this.props;
@@ -24,17 +27,22 @@ class MateList extends React.Component {
             return <Text>Loading...</Text>;
         }
 
+
         return (
             <View style={styles.container}>
                 <FlatList
                     data={mates}
-                    renderItem={(mate) => (
-                        <MateItem mate={mate}/>
-                    )}
+                    renderItem={({item}) =>
+                        <MateItem
+                            title={item.title}
+                            description={item.description}
+                            item={item}
+                        />}
                 />
             </View>
         );
     }
+
 }
 
 const mapStateToProps = state => ({

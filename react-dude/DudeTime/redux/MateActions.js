@@ -1,16 +1,20 @@
 export function fetchMates() {
     return dispatch => {
         dispatch(fetchMatesBegin());
-        return fetch("/mates")
+        return fetch("http://10.18.140.149:3000/mates", {
+            method: "GET"
+        })
             .then(handleErrors)
             .then(res => res.json())
             .then(json => {
-                dispatch(fetchMatesSuccess(json.mates));
+                console.log(json);
+                dispatch(fetchMatesSuccess(json));
                 return json.mates;
             })
             .catch(error => dispatch(fetchMatesFailure(error)));
     };
 }
+
 
 // Handle HTTP errors since fetch won't.
 function handleErrors(response) {

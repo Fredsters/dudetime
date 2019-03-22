@@ -1,10 +1,8 @@
-const Mate = require('../models/Mate').model;
+const Mate = require('../models/Mate');
 const User = require('./User');
 
 exports.getMates = async (ctx) => {
-    const mates = await Mate.find({}).populate('owner').populate('participants').exec(function (err, mates) {
-        console.log(mates) // Max
-    });
+    let mates = await Mate.find({}).populate('owner').populate('participants').exec();
     if (!mates) {
         throw new Error("There was an error retrieving your mates.")
     } else {

@@ -1,16 +1,17 @@
 import React from 'react';
 import {Image, Text, View} from 'react-native';
 
-export default class MateItem extends React.Component {
-    render({mate}) {
-        console.log(this.props);
-        console.log(this.props.mates);
-        console.log(mate);
+//todo this might better be a stateless component
+
+class MateItem extends React.Component {
+
+    render() {
+        console.log(this.props.title);
         return (
             <View>
                 <View>
                     <Image/>
-                    <Text>{this.props} </Text>
+                    <Text>"adsad" </Text>
                 </View>
                 <View>
                     <Text/>
@@ -19,4 +20,7 @@ export default class MateItem extends React.Component {
             </View>
         );
     }
+
 }
+
+export default MateItem;
