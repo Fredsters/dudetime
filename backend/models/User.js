@@ -6,8 +6,7 @@ const UserSchema = new Schema({
     lastName: String,
     firstName: String,
     phoneNumber: { type: String, required: true },
-    picture: { data: Buffer, contentType: String },
-    profile: { type: Schema.Types.ObjectId, ref: 'Profile' }
+    picture: { data: Buffer, contentType: String }, //change this to image Path and store on S3 or so ... or even store the small avatar images in frontend app store
 });
 
 module.exports = mongoose.model("User", UserSchema);

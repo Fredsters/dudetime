@@ -5,16 +5,16 @@ var ObjectId = Schema.Types.ObjectId;
 var status_array = ["PAST", "OPEN", "ACCEPTED", "HIDDEN", "HIDDEN_ACCEPTED"];
 
 const MateSchema = new Schema({
-	title: String,
-	description: String,
-	activity: String,
-	location: String,
-	time: { type: Date, required: true },
-	createTime: { type: Date, default: Date.now },
-	status: {type: String, uppercase: true, enum: [status_array]},
-	owner: { type: ObjectId, ref: 'User' },
-	receivers: {type: [ObjectId], required: true},
-	participants: [{ type: ObjectId, ref: 'User' }]
+    title: String,
+    tags: [String],
+    location: String,
+    subLocation: String,
+    time: {type: Date, required: true},
+    createTime: {type: Date, default: Date.now},
+    status: {type: String, uppercase: true, enum: [status_array]},
+    owner: {type: ObjectId, ref: 'User'},
+    receivers: {type: [ObjectId], required: true, ref: 'User'},
+    participants: [{type: ObjectId, ref: 'User'}]
 });
 
 module.exports = mongoose.model("Mate", MateSchema);
