@@ -14,6 +14,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
         elevation: 2,
     },
+
     title: {
         fontSize: 16,
         color: '#000',
@@ -34,9 +35,8 @@ const styles = StyleSheet.create({
     },
 });
 
-const CustomRow = ({title, description, item}) => {
-    console.log(item);
-    return (
+const CustomRow = ({title, description}) => {
+    (
         <View style={styles.container}>
             <View style={styles.container_text}>
                 <Text style={styles.title}>

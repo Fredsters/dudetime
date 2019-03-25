@@ -17,6 +17,7 @@ class MateList extends React.Component {
     }
 
 
+
     render() {
         const {error, loading, mates} = this.props;
 
@@ -27,6 +28,7 @@ class MateList extends React.Component {
         if (loading) {
             return <Text>Loading...</Text>;
         }
+
 
 
         return (

@@ -2,7 +2,6 @@ const Koa = require('koa'),
     Router = require('koa-router'),
     user = require('./controller/user'),
     mate = require('./controller/mate'),
-    profile = require('./controller/profile'),    
     app = new Koa(),
     router = new Router(),
     db = require('./database').db,
@@ -21,15 +20,15 @@ app.use(async (ctx, next) => {
 
 router
     .get('/saysomething', async (ctx) => {
-        ctx.body = 'HEllo Fred';
+        ctx.body = 'Hello Fred';
     })
     .get('/throwerror', async (ctx) => {
         throw new Error('Aghh! An error!')
     })
     .get('/users', user.getUsers)
-    .post('/user', koaBody, user.createUser)
+    .post('/users', koaBody, user.createUser)
     .get('/mates', mate.getMates)
-    .post('/mate', koaBody, mate.createMate);
+    .post('/mates', koaBody, mate.createMate);
 
 app
     .use(router.routes())

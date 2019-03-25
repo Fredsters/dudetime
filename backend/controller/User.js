@@ -1,4 +1,7 @@
 const User = require('../models/User');
+const fs = require("fs");
+const path = require("path");
+const util = require("../util/util");
 
 exports.getUsers = async (ctx) => {
     const users = await User.find({});
@@ -11,8 +14,6 @@ exports.getUsers = async (ctx) => {
 };
 
 exports.createUser = async (ctx) => {
-    console.log("Hallo Bert");
-    console.log(ctx);
     try {
         ctx.body = JSON.parse(ctx.request.body); //todo put this in some middleware
     } catch (e) {
@@ -20,10 +21,18 @@ exports.createUser = async (ctx) => {
     }
 
     if (!ctx.body.phoneNumber) {
+
         ctx.body.phoneNumber = Math.random().toString().substring(2);
-        ctx.body.firstName = "firstName " + Math.random().toString().substring(2);
-        ctx.body.lastName = "lastName " + Math.random().toString().substring(2);
-        ctx.body.userName = "userName " + Math.random().toString().substring(2);
+        ctx.body.firstName = "firstName " + util.getRandom(100);
+        ctx.body.lastName = "lastName " + util.getRandom(100);
+        ctx.body.userName = "userName " + util.getRandom(100);
+        // var pic = Math.floor(Math.random() * Math.floor(3));
+        // var filePath = path.join(__dirname, '../resources/demo_images/' + pic + '.jpg');
+        // ctx.body.picture = {
+        //     data: fs.readFileSync(filePath),
+        //     contentType: "image/jpg"
+        // };
+
     }
     const result = await
         User.create({
@@ -31,7 +40,7 @@ exports.createUser = async (ctx) => {
             firstName: ctx.body.firstName,
             lastName: ctx.body.lastName,
             userName: ctx.body.userName,
-            profile: ctx.body.id
+            picture: ctx.body.picture
         });
     if (!result) {
         throw new Error('User failed to create.')
