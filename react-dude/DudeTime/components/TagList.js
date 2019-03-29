@@ -12,7 +12,6 @@ const styles = StyleSheet.create({
 });
 
 const TagList = ({tags}) => {
-    tags.push("#Hallo", "#Sauufeeen!");
     return (
         <View style={style.row}>
             {tags.map((item, key) => {

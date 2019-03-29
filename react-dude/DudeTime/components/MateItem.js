@@ -6,15 +6,14 @@ import DudePic from "./DudePic";
 import {getDummyImage} from "../util/Util";
 import style from '../Style';
 import Moment from 'moment';
-import {LinearGradient} from 'expo';
+import AcceptSlider from './AcceptSlider';
+
+const source = getDummyImage();
 
 class MateItem extends React.Component {
+
     render() {
         let mate = this.props.item;
-        let source = getDummyImage();
-
-        mate.title = "Saufen gehen. Nächste Woche meldenteresad s sdf sdf  Meldet euchd wad wadwa dwa wad awd awd ss";
-
         return (
             <View style={styles.mateItem}>
                 <View style={styles.header}>
@@ -33,21 +32,7 @@ class MateItem extends React.Component {
                     <View><Text style={styles.figureText}>{Moment(mate.time).format('ddd, L')}</Text><Text
                         style={styles.figureText}>{Moment(mate.time).format(Moment.HTML5_FMT.TIME)}</Text></View>
                 </View>
-                <LinearGradient
-                    colors={['#4c669f', '#3b5998', '#192f6a', 'green']}
-                >
-                    <Slider
-                        style={styles.slider}
-                        minimumValue={0}
-                        maximumValue={1}
-                        minimumTrackTintColor="#1db954"
-                        maximumTrackTintColor="#000000"
-                        onValueChange={(a) => {
-                            console.log(`call it ${a}`);
-                        }}
-
-                    />
-                </LinearGradient>
+                <AcceptSlider/>
             </View>
         );
     }
@@ -80,11 +65,6 @@ const styles = StyleSheet.create({
     },
     figureText: {
         color: '#1db954',
-    },
-    slider: {
-        height: 80,
-        marginLeft: 40,
-        marginRight: 40,
     }
 });
 
