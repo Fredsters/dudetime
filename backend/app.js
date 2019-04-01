@@ -1,9 +1,8 @@
 const Koa = require('koa'),
-    Router = require('koa-router'),
+    app = new Koa(),
+    router = require('koa-router')(),
     user = require('./controller/user'),
     mate = require('./controller/mate'),
-    app = new Koa(),
-    router = new Router(),
     db = require('./database').db,
     koaBody = require('koa-body')();
 

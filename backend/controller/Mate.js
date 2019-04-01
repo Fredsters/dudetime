@@ -13,7 +13,7 @@ exports.getMates = async (ctx) => {
 
 exports.createMate = async (ctx) => {
     try {
-        ctx.body = JSON.parse(ctx.request.body); //todo put this in some middleware
+        ctx.body = ctx.request.body; //todo put this in some middleware
     } catch (e) {
         console.log("not JSON");
     }

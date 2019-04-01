@@ -1,7 +1,11 @@
 import React from 'react';
-import {Animated, PanResponder, Platform, Slider, StyleSheet, Text, View, Dimensions} from 'react-native';
-import {LinearGradient} from 'expo';
-import {Ionicons} from '@expo/vector-icons';
+import { Animated, PanResponder, Platform, Slider, StyleSheet, Text, View, Dimensions, LayoutAnimation, UIManager } from 'react-native';
+import { LinearGradient } from 'expo';
+import { Ionicons } from '@expo/vector-icons';
+
+
+UIManager.setLayoutAnimationEnabledExperimental &&
+    UIManager.setLayoutAnimationEnabledExperimental(true);
 
 function linearTransform(fValue, fInputMin, fInputMax, fOutputMin, fOutputMax) {
     var fDiff, fSign, fOutputDiff;
@@ -21,8 +25,19 @@ function linearTransform(fValue, fInputMin, fInputMax, fOutputMin, fOutputMax) {
 
 class AcceptSlider extends React.Component {
 
+    _handlePanResponderGrant = () => {
+        this.setState({ wi: Dimensions.get('window').width });
+    };
+
+    _updateBackground = () => {
+        //todo use interpolate instead
+        var a = linearTransform(this._dragThumbStyles.style.left, 20, Dimensions.get('window').width - 60, 0, 1);
+        this.setState({ locations: [Math.pow(a, 3), a] });
+    };
+
     _handlePanResponderMove = (event, gestureState) => {
         this._dragThumbStyles.style.left = this._previousLeft + gestureState.dx;
+        this._updateBackground();
         this._updateNativeStyles();
     };
 
@@ -30,8 +45,8 @@ class AcceptSlider extends React.Component {
         this._previousLeft += gestureState.dx;
         this._updateNativeStyles();
         let width = Dimensions.get('window').width;
-        this.moveAnimation.setValue({x: this._dragThumbStyles.style.left, y: 20});
-        if((width - 80) > this._dragThumbStyles.style.left) {
+        this.moveAnimation.setValue({ x: this._dragThumbStyles.style.left, y: 20 });
+        if ((width - 80) > this._dragThumbStyles.style.left) {
             this._dragThumbToStart();
         } else {
             this._dragThumbToAccept();
@@ -46,6 +61,7 @@ class AcceptSlider extends React.Component {
     _updateAfterAnimation() {
         this._grant = true;
         this._updateNativeStyles();
+        this._updateBackground();
     }
 
     _previousLeft = 20;
@@ -60,25 +76,30 @@ class AcceptSlider extends React.Component {
         this._grant = false;
         this._dragThumbStyles.style.left = 20;
         this._previousLeft = 20;
+        LayoutAnimation.spring();
+        this.setState({ wi: 1 });
         Animated.spring(this.moveAnimation, {
-            toValue: {x: 20, y: 20},
+            toValue: { x: 20, y: 20 }
         }).start(this._updateAfterAnimation.bind(this));
     };
 
     _dragThumbToAccept = () => {
         let x = Dimensions.get('window').width - 60;
         this._grant = false;
-        this._dragThumbStyles.style.left =x;
+        this._dragThumbStyles.style.left = x;
         this._previousLeft = x;
+        // LayoutAnimation.spring();
+        // this.setState({ wi: x + 60 });
+        this._updateBackground();
         Animated.spring(this.moveAnimation, {
-            toValue: {x: x, y: 20},
+            toValue: { x: x, y: 20 }
         }).start(this._updateAfterAnimation.bind(this));
     };
 
     constructor(props) {
         super(props);
 
-        this.moveAnimation = new Animated.ValueXY({x: 20, y: 20});
+        this.moveAnimation = new Animated.ValueXY({ x: 20, y: 20 });
 
         this._panResponder = PanResponder.create({
             onStartShouldSetPanResponder: () => this._grant,
@@ -90,6 +111,7 @@ class AcceptSlider extends React.Component {
         });
 
         this.state = {
+            wi: Dimensions.get('window').width,
             startSlider: [0, 0.3],
             endSlider: [1, 0.3],
             locations: [0, 0],
@@ -99,56 +121,37 @@ class AcceptSlider extends React.Component {
 
     render() {
         return (
-            <LinearGradient
-                colors={this.state.colors}
-                start={this.state.startSlider}
-                end={this.state.endSlider}
-                locations={this.state.locations}
-
-            >
-
-                <Slider
-                    style={styles.slider}
-                    minimumValue={0}
-                    maximumValue={1}
-                    maximumTrackTintColor={"transparent"}
-                    minimumTrackTintColor={"transparent"}
-                    thumbImage={require("../assets/images/arrow_right_2.png")}
-                    thumbStyle={styles.thumb}
-                    onValueChange={(a) => {
-                        this.setState({locations: [Math.pow(a, 3), a]});
-                    }}
-                >
-                </Slider>
-
-
+            <View style={styles.container}>
                 <View style={styles.pan}>
-                    <Animated.View ref={dragThumb => {
-                        this.dragThumb = dragThumb;
-                    }}
-                                   style={[styles.dragThumb, this.moveAnimation.getLayout()]} {...this._panResponder.panHandlers}></Animated.View>
-                </View>
+                    <LinearGradient
+                        style={[styles.gradient, { width: this.state.wi }]}
+                        colors={this.state.colors}
+                        start={this.state.startSlider}
+                        end={this.state.endSlider}
+                        locations={this.state.locations}
 
-            </LinearGradient>
+                    />
+                </View>
+                <Animated.View ref={dragThumb => {
+                    this.dragThumb = dragThumb;
+                }}
+                    style={[styles.dragThumb, this.moveAnimation.getLayout()]} {...this._panResponder.panHandlers}></Animated.View>
+            </View>
         );
     }
 }
 
 
 const styles = StyleSheet.create({
-    slider: {
-        height: 50,
-        marginLeft: 20,
-        marginRight: 20,
+    gradient: {
+        height: 50
     },
-    thumb: {
-        paddingBottom: 2
+    container: {
+        height: 50
     },
     pan: {
         flex: 1,
-        paddingTop: 50,
-        backgroundColor: "cyan",
-        justifyContent: "space-between"
+        height: 50,
     },
     dragThumb: {
         height: 40,

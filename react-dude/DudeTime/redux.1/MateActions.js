@@ -1,7 +1,7 @@
 export function fetchMates() {
     return dispatch => {
         dispatch(fetchMatesBegin());
-        return fetch("http://192.168.0.241:3000/mates", {
+        return fetch("http://10.18.140.149:3000/mates", {
             method: "GET"
         })
             .then(handleErrors)

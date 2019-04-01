@@ -15,7 +15,7 @@ exports.getUsers = async (ctx) => {
 
 exports.createUser = async (ctx) => {
     try {
-        ctx.body = JSON.parse(ctx.request.body); //todo put this in some middleware
+        ctx.body = ctx.request.body; //todo put this in some middleware
     } catch (e) {
         console.log("not JSON");
     }
