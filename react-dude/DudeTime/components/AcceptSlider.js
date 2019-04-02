@@ -1,11 +1,17 @@
 import React from 'react';
-import { Animated, PanResponder, Platform, Slider, StyleSheet, Text, View, Dimensions, LayoutAnimation, UIManager } from 'react-native';
-import { LinearGradient } from 'expo';
-import { Ionicons } from '@expo/vector-icons';
+import {Animated, Dimensions, LayoutAnimation, PanResponder, StyleSheet, UIManager, View} from 'react-native';
+import {LinearGradient} from 'expo';
+import {AntDesign} from '@expo/vector-icons';
 
 
 UIManager.setLayoutAnimationEnabledExperimental &&
-    UIManager.setLayoutAnimationEnabledExperimental(true);
+UIManager.setLayoutAnimationEnabledExperimental(true);
+
+const deviceWidth = Dimensions.get('window').width;
+const thumbStart = 20;
+const thumbEnd = deviceWidth - 60;
+const thumbDropArea = deviceWidth - 80;
+const thumbTopOffset = 10;
 
 function linearTransform(fValue, fInputMin, fInputMax, fOutputMin, fOutputMax) {
     var fDiff, fSign, fOutputDiff;
@@ -26,13 +32,17 @@ function linearTransform(fValue, fInputMin, fInputMax, fOutputMin, fOutputMax) {
 class AcceptSlider extends React.Component {
 
     _handlePanResponderGrant = () => {
-        this.setState({ wi: Dimensions.get('window').width });
+        this.setState({gradientWidth: deviceWidth});
     };
 
     _updateBackground = () => {
         //todo use interpolate instead
-        var a = linearTransform(this._dragThumbStyles.style.left, 20, Dimensions.get('window').width - 60, 0, 1);
-        this.setState({ locations: [Math.pow(a, 3), a] });
+        var a = linearTransform(this._dragThumbStyles.style.left, thumbStart, thumbEnd, 0, 1);
+        // var a = this._dragThumbStyles.style.left.interpolate({
+        //     inputRange: [20, this.state.deviceWidth - 60],
+        //     outputRange: [0,1]
+        // });
+        this.setState({gradientLocations: [Math.pow(a, 3), a]});
     };
 
     _handlePanResponderMove = (event, gestureState) => {
@@ -44,14 +54,12 @@ class AcceptSlider extends React.Component {
     _handlePanResponderEnd = (event, gestureState) => {
         this._previousLeft += gestureState.dx;
         this._updateNativeStyles();
-        let width = Dimensions.get('window').width;
-        this.moveAnimation.setValue({ x: this._dragThumbStyles.style.left, y: 20 });
-        if ((width - 80) > this._dragThumbStyles.style.left) {
+        this.moveAnimation.setValue({x: this._dragThumbStyles.style.left, y: thumbTopOffset});
+        if (thumbDropArea > this._dragThumbStyles.style.left) {
             this._dragThumbToStart();
         } else {
             this._dragThumbToAccept();
         }
-
     };
 
     _updateNativeStyles() {
@@ -64,7 +72,7 @@ class AcceptSlider extends React.Component {
         this._updateBackground();
     }
 
-    _previousLeft = 20;
+    _previousLeft = 10;
     _grant = true;
     _dragThumbStyles = {
         style: {
@@ -74,32 +82,29 @@ class AcceptSlider extends React.Component {
 
     _dragThumbToStart = () => {
         this._grant = false;
-        this._dragThumbStyles.style.left = 20;
-        this._previousLeft = 20;
+        this._dragThumbStyles.style.left = thumbStart;
+        this._previousLeft = thumbStart;
         LayoutAnimation.spring();
-        this.setState({ wi: 1 });
+        this.setState({gradientWidth: 1});
         Animated.spring(this.moveAnimation, {
-            toValue: { x: 20, y: 20 }
+            toValue: {x: thumbStart, y: thumbTopOffset}
         }).start(this._updateAfterAnimation.bind(this));
     };
 
     _dragThumbToAccept = () => {
-        let x = Dimensions.get('window').width - 60;
         this._grant = false;
-        this._dragThumbStyles.style.left = x;
-        this._previousLeft = x;
-        // LayoutAnimation.spring();
-        // this.setState({ wi: x + 60 });
+        this._dragThumbStyles.style.left = thumbEnd;
+        this._previousLeft = thumbEnd;
         this._updateBackground();
         Animated.spring(this.moveAnimation, {
-            toValue: { x: x, y: 20 }
+            toValue: {x: thumbEnd, y: thumbTopOffset}
         }).start(this._updateAfterAnimation.bind(this));
     };
 
     constructor(props) {
         super(props);
 
-        this.moveAnimation = new Animated.ValueXY({ x: 20, y: 20 });
+        this.moveAnimation = new Animated.ValueXY({x: thumbStart, y: thumbTopOffset});
 
         this._panResponder = PanResponder.create({
             onStartShouldSetPanResponder: () => this._grant,
@@ -111,31 +116,35 @@ class AcceptSlider extends React.Component {
         });
 
         this.state = {
-            wi: Dimensions.get('window').width,
-            startSlider: [0, 0.3],
-            endSlider: [1, 0.3],
-            locations: [0, 0],
-            colors: ['#1db954', 'transparent']
+            gradientWidth: Dimensions.get('window').width,
+            gradientStart: [0, 0.3],
+            gradientEnd: [1, 0.3],
+            //todo maybe add some locations and colors
+            gradientLocations: [0, 0],
+            gradientColors: ['#1db954', 'transparent']
         };
     }
 
     render() {
         return (
             <View style={styles.container}>
-                <View style={styles.pan}>
-                    <LinearGradient
-                        style={[styles.gradient, { width: this.state.wi }]}
-                        colors={this.state.colors}
-                        start={this.state.startSlider}
-                        end={this.state.endSlider}
-                        locations={this.state.locations}
-
-                    />
-                </View>
+                <LinearGradient
+                    style={[styles.gradient, {width: this.state.gradientWidth}]}
+                    colors={this.state.gradientColors}
+                    start={this.state.gradientStart}
+                    end={this.state.gradientEnd}
+                    locations={this.state.gradientLocations}
+                />
                 <Animated.View ref={dragThumb => {
                     this.dragThumb = dragThumb;
                 }}
-                    style={[styles.dragThumb, this.moveAnimation.getLayout()]} {...this._panResponder.panHandlers}></Animated.View>
+                               style={[styles.dragThumb, this.moveAnimation.getLayout()]} {...this._panResponder.panHandlers}>
+                    <AntDesign
+                        name="rightcircleo"
+                        size={40}
+                        color="#ffffff"
+                    />
+                </Animated.View>
             </View>
         );
     }
@@ -144,25 +153,17 @@ class AcceptSlider extends React.Component {
 
 const styles = StyleSheet.create({
     gradient: {
-        height: 50
+        height: 60
     },
     container: {
-        height: 50
-    },
-    pan: {
         flex: 1,
-        height: 50,
+        height: 60,
+        position: 'relative'
     },
     dragThumb: {
         height: 40,
         width: 40,
-        backgroundColor: 'yellow',
-        position: 'absolute',
-    },
-    target: {
-        height: 40,
-        width: 40,
-        backgroundColor: 'blue'
+        position: 'absolute'
     }
 });
 

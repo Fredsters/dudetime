@@ -11,6 +11,7 @@ import {
 import { WebBrowser } from 'expo';
 
 import { MonoText } from '../components/StyledText';
+import AcceptSlider from "../components/AcceptSlider";
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -59,6 +60,7 @@ export default class HomeScreen extends React.Component {
           <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
             <MonoText style={styles.codeHighlightText}>navigation/MainTabNavigator.js</MonoText>
           </View>
+            <AcceptSlider/>
         </View>
       </View>
     );
