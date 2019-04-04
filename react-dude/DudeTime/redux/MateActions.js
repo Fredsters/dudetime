@@ -26,6 +26,7 @@ function handleErrors(response) {
 export const FETCH_MATES_BEGIN = 'FETCH_MATES_BEGIN';
 export const FETCH_MATES_SUCCESS = 'FETCH_MATES_SUCCESS';
 export const FETCH_MATES_FAILURE = 'FETCH_MATES_FAILURE';
+export const ACCEPT_MATE = 'ACCEPT_MATE';
 
 export const fetchMatesBegin = () => ({
     type: FETCH_MATES_BEGIN
@@ -39,4 +40,9 @@ export const fetchMatesSuccess = mates => ({
 export const fetchMatesFailure = error => ({
     type: FETCH_MATES_FAILURE,
     payload: {error}
+});
+
+export const acceptMate = mateId => ({
+    type: ACCEPT_MATE,
+    payload: {mateId}
 });

@@ -1,12 +1,13 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import style from '../Style';
+import Colors from "../constants/Colors";
 
 const styles = StyleSheet.create({
     tag: {
         marginLeft: 5,
         marginRight: 5,
-        color: '#1db954',
+        color: Colors.white,
         fontSize: 16
     }
 });

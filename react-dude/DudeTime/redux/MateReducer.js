@@ -1,7 +1,7 @@
-import {FETCH_MATES_BEGIN, FETCH_MATES_FAILURE, FETCH_MATES_SUCCESS} from './MateActions';
+import {ACCEPT_MATE, FETCH_MATES_BEGIN, FETCH_MATES_FAILURE, FETCH_MATES_SUCCESS} from './MateActions';
 
 const initialState = {
-    items: [],
+    mates: [],
     loading: false,
     error: null
 };
@@ -23,7 +23,7 @@ export default function mateReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: false,
-                items: action.payload.mates
+                mates: action.payload.mates
             };
 
         case FETCH_MATES_FAILURE:
@@ -38,9 +38,22 @@ export default function mateReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: action.payload.error,
-                items: []
+                mates: []
             };
+        case ACCEPT_MATE:
 
+            const {mates} = state;
+
+            let mate = mates.find((mate) => {
+                return action.payload.mateId === mate._id;
+            });
+            //todo add current user
+            //mate.participants.push(new user)
+            mate.hasUpdate = true;
+            return {
+                ...state,
+                bla: "bla"
+            };
         default:
             // ALWAYS have a default case in a reducer
             return state;

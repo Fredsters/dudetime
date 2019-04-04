@@ -7,6 +7,10 @@ import {getDummyImage} from "../util/Util";
 import style from '../Style';
 import Moment from 'moment';
 import AcceptSlider from './AcceptSlider';
+import Colors from "../constants/Colors";
+import {connect} from "react-redux";
+import {bindActionCreators} from 'redux';
+import {acceptMate} from '../redux/MateActions';
 
 const source = getDummyImage();
 
@@ -32,10 +36,19 @@ class MateItem extends React.Component {
                     <View><Text style={styles.figureText}>{Moment(mate.time).format('ddd, L')}</Text><Text
                         style={styles.figureText}>{Moment(mate.time).format(Moment.HTML5_FMT.TIME)}</Text></View>
                 </View>
-                <AcceptSlider/>
+                <AcceptSlider myFunc={this.handleMyFunc.bind(this)}/>
             </View>
         );
     }
+
+
+    handleMyFunc = (mateStatus) => {
+        console.log("DO ITTTTT MANAAA");
+        console.log(mateStatus);
+        console.log("current id: " + this.props.item._id);
+        this.props.acceptMate(this.props.item._id);
+        // acceptMate(this.props.item._id);
+    };
 }
 
 
@@ -44,28 +57,35 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         padding: 5,
-        backgroundColor: '#282828',
+        backgroundColor: Colors.lightBlack,
         height: 90,
         alignItems: 'center'
     },
     title: {
-        color: '#1db954',
+        color: Colors.green,
         fontSize: 20,
         marginLeft: 20,
         flex: 1,
         flexWrap: 'wrap'
     },
     mateItem: {
-        backgroundColor: '#505050',
+        backgroundColor: Colors.grey,
         marginBottom: 20
     },
     figures: {
-        backgroundColor: '#282828',
+        backgroundColor: Colors.lightBlack,
         justifyContent: 'space-between'
     },
     figureText: {
-        color: '#1db954',
+        color: Colors.green,
     }
 });
 
-export default MateItem;
+const mapStateToProps = null;
+
+const mapDispatchToProps = dispatch => (
+    bindActionCreators({
+        acceptMate,
+    }, dispatch)
+);
+export default connect(mapStateToProps, mapDispatchToProps)(MateItem);

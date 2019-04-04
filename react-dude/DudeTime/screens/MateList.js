@@ -2,21 +2,24 @@ import React from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import {fetchMates} from "../redux/MateActions";
 import {connect} from "react-redux";
-import CustomRow from './../components/CustomRow';
 import MateItem from "../components/MateItem";
-
-// import {MateItem} from "./../components/MateItem"
 
 class MateList extends React.Component {
     // static navigationOptions = {
     //     header: null,
     // };
 
+    // constructor(props) {
+    //     super(props);
+    //     this.state = {
+    //         "hallo": 123,
+    //         "was": 5435
+    //     };
+    // }
+
     componentDidMount() {
         this.props.dispatch(fetchMates());
     }
-
-
 
     render() {
         const {error, loading, mates} = this.props;
@@ -25,11 +28,10 @@ class MateList extends React.Component {
             return <Text>Error! {error.message}</Text>;
         }
 
+        console.log(this.state);
         if (loading) {
             return <Text>Loading...</Text>;
         }
-
-
 
         return (
             <View style={styles.container}>
@@ -46,14 +48,18 @@ class MateList extends React.Component {
             </View>
         );
     }
-
 }
 
-const mapStateToProps = state => ({
-    mates: state.mates.items,
-    loading: state.mates.loading,
-    error: state.mates.error
-});
+// const mapStateToProps = state => ({
+//     mates: state.mates.items,
+//     loading: state.mates.loading,
+//     error: state.mates.error
+// });
+
+const mapStateToProps = (state) => {
+    const {mates} = state;
+    return mates;
+};
 
 const styles = StyleSheet.create({
     container: {

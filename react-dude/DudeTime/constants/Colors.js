@@ -13,5 +13,11 @@ export default {
     noticeText: '#fff',
 
 
-    white: "#ffffff"
+    white: "#ffffff",
+    grey: "#505050",
+    green: "#1db954",
+    black: "#000000",
+    lightBlack: "#282828",
+    yellow: "#f4d03f",
+    cyan: "#16a085"
 };
