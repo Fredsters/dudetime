@@ -1,20 +1,39 @@
 import React from 'react';
-import {Platform, StatusBar, StyleSheet, View} from 'react-native';
+import {AsyncStorage, Platform, StatusBar, StyleSheet, View} from 'react-native';
 import {AppLoading, Asset, Font, Icon} from 'expo';
 import AppNavigator from './navigation/AppNavigator';
 import {Provider} from 'react-redux'
+import { PersistGate } from 'redux-persist/lib/integration/react';
 import {applyMiddleware, createStore} from "redux";
 import thunk from "redux-thunk";
-import rootReducer from "./redux/RootReducer";
+import {persistReducer, persistStore} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
+import rootReducer from './redux/RootReducer'; // the value from combineReducers
+import { Contacts } from 'expo';
+
+const persistConfig = {
+    key: 'root',
+    storage: storage,
+    stateReconciler: autoMergeLevel2 // see "Merge Process" section for details.
+};
+
+const pReducer = persistReducer(persistConfig, rootReducer);
 
 const store = createStore(
-    rootReducer,
+    pReducer,
+    {mate: {"Fred": "cool"}},
     applyMiddleware(thunk)
 );
+const persistor = persistStore(store);
 
 export default class App extends React.Component {
     state = {
         isLoadingComplete: false,
+    };
+
+    componentDidMount() {
+        // console.log(this.state.auth.currentUser);
     };
 
     render() {
@@ -28,14 +47,17 @@ export default class App extends React.Component {
             );
         } else {
             return (
+                // todo persistaGate can get loading screen
                 <Provider store={store}>
-                    <View style={styles.container}>
-                        {Platform.OS === 'ios' && <StatusBar barStyle="default"/>}
-                        <AppNavigator
-                            screenProps={{
-                                mateList: {"hello": "some data"}
-                            }}/>
-                    </View>
+                    <PersistGate persistor={persistor}>
+                        <View style={styles.container}>
+                            {Platform.OS === 'ios' && <StatusBar barStyle="default"/>}
+                            <AppNavigator
+                                screenProps={{
+                                    mateList: {"hello": "some data"}
+                                }}/>
+                        </View>
+                    </PersistGate>
                 </Provider>
             );
         }

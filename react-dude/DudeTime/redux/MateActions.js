@@ -1,7 +1,7 @@
 export function fetchMates() {
     return dispatch => {
         dispatch(fetchMatesBegin());
-        return fetch("http://10.18.140.149:3000/mates", {
+        return fetch("http://10.87.30.118:3000/mates", {
             method: "GET"
         })
             .then(handleErrors)
@@ -33,16 +33,13 @@ export const fetchMatesBegin = () => ({
 });
 
 export const fetchMatesSuccess = mates => ({
-    type: FETCH_MATES_SUCCESS,
-    payload: {mates}
+    type: FETCH_MATES_SUCCESS, mates
 });
 
 export const fetchMatesFailure = error => ({
-    type: FETCH_MATES_FAILURE,
-    payload: {error}
+    type: FETCH_MATES_FAILURE, error
 });
 
 export const acceptMate = mateId => ({
-    type: ACCEPT_MATE,
-    payload: {mateId}
+    type: ACCEPT_MATE, mateId
 });

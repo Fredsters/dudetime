@@ -1,0 +1,45 @@
+export function newUser(user) {
+    return dispatch => {
+        dispatch(newUserBegin());
+        return fetch("http://10.87.30.118:3000/users", {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(user),
+        })
+            .then(handleErrors)
+            .then(res => res.json())
+            .then(json => {
+                dispatch(newUserSuccess(json));
+                return json.user;
+            })
+            .catch(error => dispatch(newUserFailure(error)));
+    };
+}
+
+
+// Handle HTTP errors since fetch won't.
+function handleErrors(response) {
+    if (!response.ok) {
+        throw Error(response.statusText);
+    }
+    return response;
+}
+
+export const NEW_USER_BEGIN = 'NEW_USER_BEGIN';
+export const NEW_USER_SUCCESS = 'NEW_USER_SUCCESS';
+export const NEW_USER_FAILURE = 'NEW_USER_FAILURE';
+
+export const newUserBegin = () => ({
+    type: NEW_USER_BEGIN
+});
+
+export const newUserSuccess = user => ({
+    type: NEW_USER_SUCCESS, user
+});
+
+export const newUserFailure = error => ({
+    type: NEW_USER_FAILURE, error
+});

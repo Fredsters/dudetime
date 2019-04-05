@@ -2,6 +2,7 @@ import React from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import {fetchMates} from "../redux/MateActions";
 import {connect} from "react-redux";
+import {bindActionCreators} from 'redux';
 import MateItem from "../components/MateItem";
 
 class MateList extends React.Component {
@@ -18,7 +19,7 @@ class MateList extends React.Component {
     // }
 
     componentDidMount() {
-        this.props.dispatch(fetchMates());
+        this.props.fetchMates();
     }
 
     render() {
@@ -57,9 +58,15 @@ class MateList extends React.Component {
 // });
 
 const mapStateToProps = (state) => {
-    const {mates} = state;
-    return mates;
+    const {mate} = state;
+    return mate;
 };
+
+function mapDispatchToProps(dispatch) {
+    return {
+        ...bindActionCreators({ fetchMates }, dispatch)
+    }
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -68,4 +75,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default connect(mapStateToProps)(MateList);
+export default connect(mapStateToProps, mapDispatchToProps)(MateList);

@@ -1,6 +1,8 @@
 import {combineReducers} from 'redux'
-import mates from './MateReducer'
+import mate from './MateReducer'
+import auth from './AuthReducer'
 
 export default combineReducers({
-    mates
+    mate,
+    auth
 })
