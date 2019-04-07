@@ -1,7 +1,9 @@
+import { root } from "../constants/network"
+
 export function fetchMates() {
     return dispatch => {
         dispatch(fetchMatesBegin());
-        return fetch("http://10.87.30.118:3000/mates", {
+        return fetch(`${root}/mates`, {
             method: "GET"
         })
             .then(handleErrors)

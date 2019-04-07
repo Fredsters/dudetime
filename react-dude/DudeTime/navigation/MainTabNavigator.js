@@ -7,6 +7,7 @@ import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import MateList from '../screens/MateList';
+import Profile from '../screens/Profile';
 
 const HomeStack = createStackNavigator({
     Home: HomeScreen,
@@ -54,6 +55,20 @@ MateStack.navigationOptions = {
     ),
 };
 
+const ProfileStack = createStackNavigator({
+    Profile: Profile,
+});
+
+ProfileStack.navigationOptions = {
+    tabBarLabel: 'Profile',
+    tabBarIcon: ({focused}) => (
+        <TabBarIcon
+            focused={focused}
+            name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
+        />
+    ),
+};
+
 
 const SettingsStack = createStackNavigator({
     Settings: SettingsScreen,
@@ -70,8 +85,9 @@ SettingsStack.navigationOptions = {
 };
 
 export default createBottomTabNavigator({
-    HomeStack,
     MateStack,
+    ProfileStack,
+    HomeStack,
     LinksStack,
     SettingsStack,
 });

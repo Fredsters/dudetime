@@ -1,4 +1,4 @@
-import {NEW_USER_BEGIN, NEW_USER_FAILURE, NEW_USER_SUCCESS} from './AuthAction';
+import { NEW_USER_BEGIN, NEW_USER_FAILURE, NEW_USER_SUCCESS } from './AuthAction';
 
 const initialState = {
     user: {},
@@ -16,12 +16,14 @@ export default function mateReducer(state = initialState, action) {
         case NEW_USER_SUCCESS:
             return {
                 ...state,
+                user: action.user,
+                id: action.user._id
             };
 
         case NEW_USER_FAILURE:
             return {
                 ...state,
-                error: action.payload.error
+                error: action.error
             };
         default:
             return state;

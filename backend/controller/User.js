@@ -1,13 +1,28 @@
 const User = require('../models/User');
-const fs = require("fs");
-const path = require("path");
 const util = require("../util/util");
 
-exports.getUsers = async (ctx) => {
-    const users = await User.find({});
-    if (!users) {
-        throw new Error("There was an error retrieving your users.")
+exports.getUserContacts = async (ctx, next) => {
+    //todo only query needed fields
+    //ctx.params named route parameters
+    //ctx.request.query ?
+    const users = await User.findById(ctx.params.id, 'contacts');
+    if (!users || users.length === 0) {
+        ctx.throw(500, "There was an error retrieving your contacts.");
     } else {
+        ctx.body = users
+    }
+    return next();
+};
+
+exports.getUsers = async (ctx, next) => {
+    //todo only query needed fields
+    //ctx.params named route parameters
+    //ctx.request.query ?
+    const users = await User.find({});
+    if (!users || users.length === 0) {
+        ctx.throw(500, "There was an error retrieving your contacts.");
+    } else {
+        console.log(users[0].id);
         ctx.body = users
     }
     return users;
@@ -20,32 +35,24 @@ exports.createUser = async (ctx) => {
         console.log("not JSON");
     }
 
-    if (!ctx.body.phoneNumber) {
-
-        ctx.body.phoneNumber = Math.random().toString().substring(2);
-        ctx.body.firstName = "firstName " + util.getRandom(100);
-        ctx.body.lastName = "lastName " + util.getRandom(100);
+    console.log("Create A User");
+    if (!ctx.body.userName) {
+        //todo maybe add current location
         ctx.body.userName = "userName " + util.getRandom(100);
-        // var pic = Math.floor(Math.random() * Math.floor(3));
-        // var filePath = path.join(__dirname, '../resources/demo_images/' + pic + '.jpg');
-        // ctx.body.picture = {
-        //     data: fs.readFileSync(filePath),
-        //     contentType: "image/jpg"
-        // };
-
+        ctx.body.phoneNumber = "phoneNumber " + util.getRandom(100000);
     }
     const result = await
         User.create({
-            phoneNumber: ctx.body.phoneNumber,
-            firstName: ctx.body.firstName,
-            lastName: ctx.body.lastName,
             userName: ctx.body.userName,
-            picture: ctx.body.picture
+            picturePath: ctx.body.picturePath,
+            phoneNumber: ctx.body.phoneNumber,
+            contacts: ctx.body.contacts
         });
+
     if (!result) {
         throw new Error('User failed to create.')
+        // ctx.throw(500, "There was an error retrieving your users.");
     } else {
-        ctx.body = {message: 'User created!', data: result}
+        ctx.body = result
     }
-}
-;
+};

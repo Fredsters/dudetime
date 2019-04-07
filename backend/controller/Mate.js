@@ -3,6 +3,7 @@ const User = require('./User');
 const util = require("../util/util");
 
 exports.getMates = async (ctx) => {
+    //todo only query needed fields
     let mates = await Mate.find({}).populate('owner').populate('participants').exec();
     if (!mates) {
         throw new Error("There was an error retrieving your mates.")

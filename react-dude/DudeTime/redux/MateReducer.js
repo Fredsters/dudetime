@@ -2,7 +2,7 @@ import {ACCEPT_MATE, FETCH_MATES_BEGIN, FETCH_MATES_FAILURE, FETCH_MATES_SUCCESS
 
 const initialState = {
     mates: [],
-    loading: false,
+    loading: true,
     error: null
 };
 

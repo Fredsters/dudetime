@@ -1,7 +1,9 @@
+import { root } from "../constants/network"
+
 export function newUser(user) {
     return dispatch => {
         dispatch(newUserBegin());
-        return fetch("http://10.87.30.118:3000/users", {
+        return fetch(`${root}/users`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',

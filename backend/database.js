@@ -1,14 +1,10 @@
 const mongoose = require('mongoose');
 
-mongoose.Promise = require('bluebird');
 mongoose
-    .connect('mongodb://localhost/testDB', {
+    .connect('mongodb://localhost/dev', {
         useNewUrlParser: true
     })
-    .then((response) => {
-        console.log('mongo connection created')
-    })
     .catch((err) => {
-        console.log("Error connecting to Mongo")
+        console.log("Error connecting to MongoDB")
         console.log(err);
     });
