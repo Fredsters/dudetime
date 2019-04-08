@@ -27,10 +27,10 @@ app.on('error', (err, ctx) => {
  */
 });
 
+//todo use environment variables
 app.keys = ['Ungeheim', 'Westerhase'];
 const CONFIG = {
-    maxAge: 86400000 * 365,
-    signed: true
+    maxAge: 86400000 * 365
 };
 
 app.use(session(CONFIG, app));
@@ -41,17 +41,25 @@ app.use(async (ctx, next) => {
         return;
     }
 
-    let n = ctx.session.views || 0;
-    ctx.session.views = ++n;
-    await next();
-    console.log("lalala");
-    ctx.body.count = n;
+    if ((ctx.path === "/users" && ctx.method === "POST") || ctx.session.userId) {
+        await next();
+        if ((ctx.path === "/users" && ctx.method === "POST")) {
+            ctx.session.userId = ctx.body.id;
+        }
+    } else {
+        // let n = ctx.session.views || 0;
+        // ctx.session.views = ++n;
+        // ctx.body = n + ' views';
+        ctx.throw(401, 'No valid session');
+    }
+    console.log("hallo hier sind wir", ctx.session.userId);
 });
 
 
 router
     .get('/contacts/:id', user.getUserContacts)
     // .get('/users', user.getUsers)
+    .get("/currentUser", user.getCurrentUser)
     .post('/users', koaBody, user.createUser)
     .get('/mates', mate.getMates)
     .post('/mates', koaBody, mate.createMate);

@@ -11,7 +11,19 @@ exports.getUserContacts = async (ctx, next) => {
     } else {
         ctx.body = users
     }
-    return next();
+};
+
+
+exports.getCurrentUser = async (ctx, next) => {
+    //todo only query needed fields
+    //ctx.params named route parameters
+    //ctx.request.query ?
+    const user = await User.findById(ctx.session.userId, 'userName');
+    if (!user) {
+        ctx.throw(500, "There was an error retrieving your contacts.");
+    } else {
+        ctx.body = user
+    }
 };
 
 exports.getUsers = async (ctx, next) => {
@@ -25,13 +37,12 @@ exports.getUsers = async (ctx, next) => {
         console.log(users[0].id);
         ctx.body = users
     }
-    return users;
 };
 
 exports.createUser = async (ctx) => {
-    console.log("Create A User");
+    //todo maybe add current location
+    //todo remove this
     if (!ctx.request.body.userName) {
-        //todo maybe add current location
         ctx.request.body.userName = "userName " + util.getRandom(100);
         ctx.request.body.phoneNumber = "phoneNumber " + util.getRandom(100000);
     }
@@ -44,14 +55,8 @@ exports.createUser = async (ctx) => {
         });
 
     if (!user) {
-        throw new Error('User failed to create.')
-        // ctx.throw(500, "There was an error retrieving your users.");
+        ctx.throw(500, "Failed to create user");
     } else {
-        console.log(user.id);
-        // ctx.cookies.set("userId", user.id, {signed: false});
-        // ctx.session.userId = result.id;
-        // ctx.session.set()
-        // ctx.session.userId = user.id;
         ctx.body = user;
     }
 };
