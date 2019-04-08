@@ -9,6 +9,7 @@
     "koa": "^2.7.0",
     "koa-body": "^2.3.0",
     "koa-router": "^7.2.1",
+    "koa-session": "^5.10.1",
     "mongoose": "^5.4.19"
   },
   "devDependencies": {

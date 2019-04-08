@@ -4,9 +4,9 @@ const Koa = require('koa'),
     user = require('./controller/user'),
     mate = require('./controller/mate'),
     db = require('./database').db,
-    koaBody = require('koa-body')();
+    koaBody = require('koa-body')(),
+    session = require('koa-session');
 
-//todo need auth
 
 app.use(async (ctx, next) => {
     try {
@@ -26,6 +26,29 @@ app.on('error', (err, ctx) => {
   *   ...
  */
 });
+
+app.keys = ['Ungeheim', 'Westerhase'];
+const CONFIG = {
+    maxAge: 86400000 * 365,
+    signed: true
+};
+
+app.use(session(CONFIG, app));
+
+app.use(async (ctx, next) => {
+    // ignore favicon
+    if (ctx.path === '/favicon.ico') {
+        return;
+    }
+
+    let n = ctx.session.views || 0;
+    ctx.session.views = ++n;
+    await next();
+    console.log("lalala");
+    ctx.body.count = n;
+});
+
+
 router
     .get('/contacts/:id', user.getUserContacts)
     // .get('/users', user.getUsers)
