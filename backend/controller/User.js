@@ -34,9 +34,10 @@ exports.getUsers = async (ctx, next) => {
     if (!users || users.length === 0) {
         ctx.throw(500, "There was an error retrieving your contacts.");
     } else {
-        console.log(users[0].id);
-        ctx.body = users
+        // console.log(users[0].id);
+        // ctx.body = users
     }
+    return users;
 };
 
 exports.createUser = async (ctx) => {

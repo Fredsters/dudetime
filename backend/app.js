@@ -36,6 +36,8 @@ const CONFIG = {
 app.use(session(CONFIG, app));
 
 app.use(async (ctx, next) => {
+    //todo remove
+    return next();
     // ignore favicon
     if (ctx.path === '/favicon.ico') {
         return;

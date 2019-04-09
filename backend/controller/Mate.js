@@ -3,7 +3,6 @@ const User = require('./User');
 const util = require("../util/util");
 
 exports.getMates = async (ctx) => {
-    this.session.value
     //todo only query needed fields
     let mates = await Mate.find({}).populate('owner').populate('participants').exec();
     if (!mates) {

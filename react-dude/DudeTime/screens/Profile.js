@@ -1,16 +1,10 @@
 import React from 'react';
-import {
-    Image,
-    TextInput,
-    Button,
-    StyleSheet,
-    View,
-} from 'react-native';
-import { connect } from "react-redux";
+import {Button, Image, StyleSheet, TextInput, View,} from 'react-native';
+import {connect} from "react-redux";
 import colors from "../constants/Colors.js"
-import { bindActionCreators } from 'redux';
-import { newUser } from "../redux/AuthAction";
-import { Contacts } from 'expo';
+import {bindActionCreators} from 'redux';
+import {newUser} from "../redux/AuthAction";
+import {Contacts, Google} from 'expo';
 
 class Profile extends React.Component {
     constructor(props) {
@@ -20,7 +14,7 @@ class Profile extends React.Component {
                 text: ''
             };
         } else {
-            this.state = { text: this.props.user.userName };
+            this.state = {text: this.props.user.userName};
         }
     }
 
@@ -28,15 +22,6 @@ class Profile extends React.Component {
         this.setState({
             image: require("dudetime/assets/images/7.jpg")
         })
-
-        // (async () => {
-        //     const { data } = await Contacts.getContactsAsync();
-        //     console.log(data);
-        // })();
-        // Contacts.getContactsAsync().then((data) => {
-        //     console.log(data);
-        // });
-
     };
 
     saveUser = () => {
@@ -46,10 +31,29 @@ class Profile extends React.Component {
         });
     };
 
+    contacts = () => {
+        (async () => {
+            const {data} = await Contacts.getContactsAsync();
+            console.log(data);
+        })();
+    };
+
+    authenticate = () => {
+        (async () => {
+            const clientId = '470121245649-ggnmqsqnek2jj36ob4kqan1k885bkoia.apps.googleusercontent.com';
+            const {type, accessToken, user} = await Google.logInAsync({clientId});
+
+            if (type === 'success') {
+                /* `accessToken` is now valid and can be used to get data from the Google API with HTTP requests */
+                console.log(user);
+            }
+        })();
+    };
+
     render() {
         return (
             <View style={styles.container}>
-                <View style={styles.imageContainer} >
+                <View style={styles.imageContainer}>
                     <Image style={styles.image} source={this.state.image}></Image>
                     <Button
                         onPress={this.onSetImage.bind(this)}
@@ -59,11 +63,17 @@ class Profile extends React.Component {
                 </View>
                 <View>
                     <TextInput style={styles.textInput}
-                        onChangeText={(text) => this.setState({ text })}
-                        value={this.state.text}
-                        placeholder="Your userName" />
+                               onChangeText={(text) => this.setState({text})}
+                               value={this.state.text}
+                               placeholder="Your userName"/>
                     <Button title="save"
-                        onPress={this.saveUser}>
+                            onPress={this.saveUser}>
+                    </Button>
+                    <Button title="Authenticate"
+                            onPress={this.authenticate}>
+                    </Button>
+                    <Button title="Contacts"
+                            onPress={this.contacts}>
                     </Button>
                 </View>
             </View>
@@ -93,13 +103,13 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => {
-    const { auth } = state;
+    const {auth} = state;
     return auth;
 };
 
 function mapDispatchToProps(dispatch) {
     return {
-        ...bindActionCreators({ newUser }, dispatch)
+        ...bindActionCreators({newUser}, dispatch)
     }
 }
 
