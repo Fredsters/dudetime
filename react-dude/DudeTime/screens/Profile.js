@@ -1,52 +1,165 @@
 import React from 'react';
-import {Button, Image, StyleSheet, TextInput, View,} from 'react-native';
-import {connect} from "react-redux";
+import { Button, Image, StyleSheet, TextInput, View, } from 'react-native';
+import { connect } from "react-redux";
 import colors from "../constants/Colors.js"
-import {bindActionCreators} from 'redux';
-import {newUser} from "../redux/AuthAction";
-import {Contacts, Google} from 'expo';
+import { bindActionCreators } from 'redux';
+import { newUser } from "../redux/AuthAction";
+import { Contacts, Google, ImagePicker, Permissions } from 'expo';
+import { clientId, root } from "../constants/network";
+var RCTNetworking = require("RCTNetworking");
 
 class Profile extends React.Component {
     constructor(props) {
         super(props);
-        if (!(Object.keys(this.props.user).length === 0 && this.props.user.constructor === Object)) {
-            this.state = {
-                text: ''
-            };
-        } else {
-            this.state = {text: this.props.user.userName};
-        }
+        this.state = {};
     }
 
-    onSetImage = () => {
-        this.setState({
-            image: require("dudetime/assets/images/7.jpg")
-        })
+    async componentDidMount() {
+        if (!(this.props.auth && this.props.auth.userId)) {
+            this.prepareUserCreation();
+        } else {
+            this.state = {
+                userName: this.props.user.userName,
+                picturePath: this.props.user.picturePath
+            };
+        }
+
+        // const permission = await Permissions.getAsync(Permissions.CAMERA_ROLL);
+        // if (permission.status !== 'granted') {
+        //     const newPermission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+        //     if (newPermission.status === 'granted') {
+        //         //its granted.
+        //     }
+        // } else {
+        //     //todo handle this stuff
+        // }
+    }
+
+    _pickImage = async () => {
+        const {
+            status: cameraRollPerm
+        } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+        // only if user allows permission to camera roll
+        if (cameraRollPerm === 'granted') {
+            let pickerResult = await ImagePicker.launchImageLibraryAsync({
+                allowsEditing: true,
+                aspect: [4, 3],
+                mediaTypes: "Images"
+            });
+
+            // if (!pickerResult.cancelled) {
+
+            this._handleImagePicked(pickerResult);
+            // }
+        };
+    }
+
+    _handleImagePicked = async pickerResult => {
+        let uploadResponse, uploadResult;
+
+        try {
+            this.setState({
+                uploading: true
+            });
+
+            if (!pickerResult.cancelled) {
+                this.setState({ picturePath: pickerResult.uri });
+                uploadResponse = await this.uploadImageAsync(pickerResult.uri);
+                uploadResult = await uploadResponse.json();
+
+                this.setState({
+                    picturePath: uploadResult.picturePath
+                });
+            }
+        } catch (e) {
+            console.log({ uploadResponse });
+            console.log({ uploadResult });
+            console.log({ e });
+            alert('Upload failed, sorry :(');
+        } finally {
+            this.setState({
+                uploading: false
+            });
+        }
     };
 
-    saveUser = () => {
+
+    uploadImageAsync = async = (uri) => {
+        //Todo set the url
+        // let apiUrl = 'https://file-upload-example-backend-dkhqoilqqn.now.sh/upload';
+
+        // Note:
+        // Uncomment this if you want to experiment with local server
+        //
+        // if (Constants.isDevice) {
+        //   apiUrl = `https://your-ngrok-subdomain.ngrok.io/upload`;
+        // } else {
+        //   apiUrl = `http://localhost:3000/upload`
+        // }
+
+        let uriParts = uri.split('.');
+        let fileType = uriParts[uriParts.length - 1];
+
+        let formData = new FormData();
+        formData.append('avatar', {
+            uri,
+            name: `avatar_${this.state.userName}.${fileType}`,
+            type: `image/${fileType}`,
+        });
+
+        let options = {
+            method: 'POST',
+            body: formData,
+            headers: {
+                Accept: 'application/json'
+            },
+        };
+
+        console.log("Wir fetchen jetzt huer");
+        return fetch(`${root}/userImage`, options);
+    }
+
+    saveUser = (idToken) => {
         this.props.newUser({
-            userName: this.state.text,
-            picturePath: this.state.image
+            userName: this.state.userName,
+            picture: this.state.picture,
+            phoneNumber: this.state.phoneNumber,
+            contacts: this.contacts,
+            idToken: idToken
         });
     };
 
-    contacts = () => {
-        (async () => {
-            const {data} = await Contacts.getContactsAsync();
-            console.log(data);
-        })();
+    clearCookies = () => {
+        RCTNetworking.clearCookies(() => { });
     };
 
-    authenticate = () => {
+    prepareUserCreation = () => {
         (async () => {
-            const clientId = '470121245649-ggnmqsqnek2jj36ob4kqan1k885bkoia.apps.googleusercontent.com';
-            const {type, accessToken, user} = await Google.logInAsync({clientId});
-
+            const { type, idToken, user, accessToken } = await Google.logInAsync({ clientId });
             if (type === 'success') {
-                /* `accessToken` is now valid and can be used to get data from the Google API with HTTP requests */
-                console.log(user);
+                this.setState({
+                    userName: this.state.userName || user.name,
+                    picturePath: this.state.picturePath || user.photoUrl,
+                    idToken: idToken, //for auth on server
+                    accessToken: accessToken //for google api
+                })
+            } else {
+                //todo do some error message
             }
+        })();
+
+        (async () => {
+            const { data } = await Contacts.getContactsAsync();
+            const contacts = data.map(contact => {
+                return contact.phoneNumbers && contact.phoneNumbers.map(number => {
+                    return {
+                        "countryCode": number.countryCode,
+                        "number": number.digits
+                    }
+                }).flat();
+            }).flat().filter(number => !!number);
+            this.contacts = contacts;
         })();
     };
 
@@ -54,27 +167,34 @@ class Profile extends React.Component {
         return (
             <View style={styles.container}>
                 <View style={styles.imageContainer}>
-                    <Image style={styles.image} source={this.state.image}></Image>
+                    <Image style={styles.image} source={{ uri: this.state.picturePath }} />
                     <Button
-                        onPress={this.onSetImage.bind(this)}
+                        onPress={this._pickImage}
                         title="Add profile pic"
                         color="#841584"
                     />
                 </View>
                 <View>
                     <TextInput style={styles.textInput}
-                               onChangeText={(text) => this.setState({text})}
-                               value={this.state.text}
-                               placeholder="Your userName"/>
+                        onChangeText={(userName) => this.setState({ userName })}
+                        value={this.state.userName}
+                        placeholder="Your userName" />
+                    <TextInput style={styles.textInput}
+                        onChangeText={(phoneNumber) => this.setState({ phoneNumber })}
+                        value={this.state.phoneNumber}
+                        placeholder="Your userName" />
                     <Button title="save"
-                            onPress={this.saveUser}>
+                        onPress={this.saveUser}>
                     </Button>
+
                     <Button title="Authenticate"
-                            onPress={this.authenticate}>
+                        onPress={this.prepareUserCreation}>
                     </Button>
-                    <Button title="Contacts"
-                            onPress={this.contacts}>
+
+                    <Button title="clear Cookies"
+                        onPress={this.clearCookies}>
                     </Button>
+
                 </View>
             </View>
         );
@@ -103,13 +223,13 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => {
-    const {auth} = state;
+    const { auth } = state;
     return auth;
 };
 
 function mapDispatchToProps(dispatch) {
     return {
-        ...bindActionCreators({newUser}, dispatch)
+        ...bindActionCreators({ newUser }, dispatch)
     }
 }
 

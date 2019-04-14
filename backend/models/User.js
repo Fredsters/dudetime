@@ -5,8 +5,9 @@ var ObjectId = Schema.Types.ObjectId;
 const UserSchema = new Schema({
     userName: { type: String, required: true },
     picturePath: String,
-    phoneNumber: {type: String, required: true},
-    contacts: [{type: ObjectId, ref: 'User'}] 
+    phoneNumber: { type: String, required: true },
+    contacts: [{ type: ObjectId, ref: 'User' }],
+    authId: { type: String, required: true }
 });
 
 module.exports = mongoose.model("User", UserSchema);

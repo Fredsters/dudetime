@@ -9,13 +9,15 @@ export function newUser(user) {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
+            credentials: 'same-origin',
             body: JSON.stringify(user),
         })
             .then(handleErrors)
             .then(res => res.json())
+            // var cookie = res.headers.get("set-cookie");
             .then(json => {
                 dispatch(newUserSuccess(json));
-                return json.user;
+                return json;
             })
             .catch(error => dispatch(newUserFailure(error)));
     };

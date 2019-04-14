@@ -16,8 +16,12 @@ export default function mateReducer(state = initialState, action) {
         case NEW_USER_SUCCESS:
             return {
                 ...state,
-                user: action.user,
-                id: action.user._id
+                user: {
+                    id: action.user._id,
+                    phoneNumber: action.user.phoneNumber,
+                    userName: action.user.userName,
+                    picturePath: action.user.picturePath
+                }
             };
 
         case NEW_USER_FAILURE:

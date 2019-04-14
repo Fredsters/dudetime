@@ -4,8 +4,23 @@ const Koa = require('koa'),
     user = require('./controller/user'),
     mate = require('./controller/mate'),
     db = require('./database').db,
-    koaBody = require('koa-body')(),
-    session = require('koa-session');
+    path = require('path')
+koaBody = require('koa-body')({
+    // multipart: true,
+    // formidable: { memoryStore: true, multiples: false }
+}),
+    // multer = require('koa-multer'),
+    // upload = multer({
+    //     storage: multer.memoryStorage(),
+    //     limits: {
+    //         fileSize: 5 * 1024 * 1024 // no larger than 5mb
+    //     }
+    // });
+    Multy = require('multy'),
+    session = require('koa-session'),
+    auth = require('./util/auth');
+require('dotenv').config();
+
 
 
 app.use(async (ctx, next) => {
@@ -19,6 +34,9 @@ app.use(async (ctx, next) => {
 });
 
 app.on('error', (err, ctx) => {
+    console.log(err.message);
+    console.log(err);
+    console.log(ctx);
     /* centralized error handling:
   *   console.log error
   *   write error to log file
@@ -34,37 +52,35 @@ const CONFIG = {
 };
 
 app.use(session(CONFIG, app));
+app.use(koaBody);
 
-app.use(async (ctx, next) => {
-    //todo remove
-    return next();
-    // ignore favicon
-    if (ctx.path === '/favicon.ico') {
-        return;
-    }
-
-    if ((ctx.path === "/users" && ctx.method === "POST") || ctx.session.userId) {
-        await next();
-        if ((ctx.path === "/users" && ctx.method === "POST")) {
-            ctx.session.userId = ctx.body.id;
-        }
-    } else {
-        // let n = ctx.session.views || 0;
-        // ctx.session.views = ++n;
-        // ctx.body = n + ' views';
-        ctx.throw(401, 'No valid session');
-    }
-    console.log("hallo hier sind wir", ctx.session.userId);
-});
-
+// app.use(async (ctx, next) => {
+//     //todo store session cookie in db ?
+//     //todo check how to handle expired session
+//     const token = ctx.request.body.idToken;
+//     if (ctx.session.userId || token) {
+//         if (token) {
+//             const authId = await auth.verify(token)
+//             ctx.request.body.authId = authId;
+//         }
+//         await next();
+//         if (token) {
+//             ctx.session.userId = ctx.body.id;
+//         }
+//     } else {
+//         ctx.throw(401, 'No valid session');
+//     }
+// });
+router.use(Multy());
 
 router
     .get('/contacts/:id', user.getUserContacts)
     // .get('/users', user.getUsers)
     .get("/currentUser", user.getCurrentUser)
-    .post('/users', koaBody, user.createUser)
+    .post('/users', user.handleUser)
     .get('/mates', mate.getMates)
-    .post('/mates', koaBody, mate.createMate);
+    .post('/mates', mate.createMate)
+    .post('/userImage', user.uploadUserImage, user.updateUserPicture);
 
 app
     .use(router.routes())

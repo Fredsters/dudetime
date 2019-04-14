@@ -7,23 +7,12 @@ import { bindActionCreators } from 'redux';
 import MateItem from "dudetime/components/MateItem.js";
 
 class MateList extends React.Component {
-    // static navigationOptions = {
-    //     header: null,
-    // };
-
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {
-    //         "hallo": 123,
-    //         "was": 5435
-    //     };
-    // }
 
     componentDidMount() {
-        if (!(Object.keys(this.props.auth.user).length === 0 && this.props.auth.user.constructor === Object)) {
+        if (this.props.auth && this.props.auth.userId) {
             this.props.fetchMates();
         } else {
-            const {navigate} = this.props.navigation;
+            const { navigate } = this.props.navigation;
             //todo navigate to user create screen, get phoneNumer, put in firstName, LastName, profile pic and 
             navigate("Profile");
         }
@@ -58,12 +47,6 @@ class MateList extends React.Component {
         );
     }
 }
-
-// const mapStateToProps = state => ({
-//     mates: state.mates.items,
-//     loading: state.mates.loading,
-//     error: state.mates.error
-// });
 
 const mapStateToProps = (state) => {
     const { mate, auth } = state;
