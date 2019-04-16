@@ -5,7 +5,7 @@ import colors from "../constants/Colors.js"
 import {bindActionCreators} from 'redux';
 import {newUser} from "../redux/AuthAction";
 import {Contacts, Google, ImagePicker, Permissions} from 'expo';
-import {root} from "../constants/network";
+import {clientId, root} from "../constants/network";
 import * as firebase from 'firebase';
 
 var RCTNetworking = require("RCTNetworking");
@@ -35,14 +35,6 @@ class Profile extends React.Component {
         // } else {
         //     //todo handle this stuff
         // }
-        var firebaseConfig = {
-            apiKey: "AIzaSyD5HTklqZCLHaoB-x0tLbg5B2Wex4_B3_s",
-            authDomain: "dudetime.firebaseapp.com",
-            databaseURL: "https://dudetime.firebaseio.com",
-            projectId: "dudetime",
-            storageBucket: "dudetime.appspot.com",
-            messagingSenderId: "216116664350"
-        };
 
         firebase.initializeApp(firebaseConfig);
     }
@@ -191,10 +183,11 @@ class Profile extends React.Component {
                 xhr.send(null);
             });
 
+        // console.log(firebase.auth().currentUser.email);
         const ref = firebase
             .storage()
             .ref()
-            .child("random_lala");
+            .child("random_lala_" + Math.random());
         const snapshot = await
             ref.put(blob);
 
@@ -249,13 +242,21 @@ class Profile extends React.Component {
         RCTNetworking.clearCookies(() => {
         });
     };
+    logout = async () => {
+        const clientId = clientId;
+
+        /* Log-Out */
+        let accessToken = this.state.accessToken;
+        await Google.logOutAsync({clientId, accessToken});
+
+        await firebase.auth().signOut();
+        /* `accessToken` is now invalid and cannot be used to get data from the Google API with HTTP requests */
+    };
 
     prepareUserCreation = () => {
         (async () => {
             const {type, idToken, user, accessToken} = await Google.logInAsync({
-                //216116664350-7p98cv183u24pvcd41alaajsg3q80jto.apps.googleusercontent.com
-                // clientId: "216116664350-aaq061uou5m0kjo6ptpi5lhqj11bpm0r.apps.googleusercontent.com",
-                clientId: "216116664350-7p98cv183u24pvcd41alaajsg3q80jto.apps.googleusercontent.com",
+                clientId: clientId,
                 scopes: ["profile", "email"]
             });
             if (type === 'success') {
@@ -338,6 +339,9 @@ class Profile extends React.Component {
                         </Button>
                         <Button title="load Image from fire"
                                 onPress={this.loadImage}>
+                        </Button>
+                        <Button title="logout"
+                                onPress={this.logout}>
                         </Button>
                     </View>
                 </View>
