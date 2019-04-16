@@ -1,11 +1,12 @@
 import React from 'react';
-import { Button, Image, StyleSheet, TextInput, View, } from 'react-native';
-import { connect } from "react-redux";
+import {Button, Image, ScrollView, StyleSheet, TextInput, View} from 'react-native';
+import {connect} from "react-redux";
 import colors from "../constants/Colors.js"
-import { bindActionCreators } from 'redux';
-import { newUser } from "../redux/AuthAction";
-import { Contacts, Google, ImagePicker, Permissions } from 'expo';
-import { clientId, root } from "../constants/network";
+import {bindActionCreators} from 'redux';
+import {newUser} from "../redux/AuthAction";
+import {Contacts, Google, ImagePicker, Permissions} from 'expo';
+import {clientId, root} from "../constants/network";
+
 var RCTNetworking = require("RCTNetworking");
 
 class Profile extends React.Component {
@@ -52,8 +53,8 @@ class Profile extends React.Component {
 
             this._handleImagePicked(pickerResult);
             // }
-        };
-    }
+        }
+    };
 
     _handleImagePicked = async pickerResult => {
         let uploadResponse, uploadResult;
@@ -64,18 +65,19 @@ class Profile extends React.Component {
             });
 
             if (!pickerResult.cancelled) {
-                this.setState({ picturePath: pickerResult.uri });
+                this.setState({picturePath: pickerResult.uri});
                 uploadResponse = await this.uploadImageAsync(pickerResult.uri);
                 uploadResult = await uploadResponse.json();
 
                 this.setState({
-                    picturePath: uploadResult.picturePath
+                    picturePath: uploadResult.picturePath,
+                    picture: uploadResult.picturePath
                 });
             }
         } catch (e) {
-            console.log({ uploadResponse });
-            console.log({ uploadResult });
-            console.log({ e });
+            console.log({uploadResponse});
+            console.log({uploadResult});
+            console.log({e});
             alert('Upload failed, sorry :(');
         } finally {
             this.setState({
@@ -85,7 +87,7 @@ class Profile extends React.Component {
     };
 
 
-    uploadImageAsync = async = (uri) => {
+    uploadImageAsync = async (uri) => {
         //Todo set the url
         // let apiUrl = 'https://file-upload-example-backend-dkhqoilqqn.now.sh/upload';
 
@@ -118,25 +120,49 @@ class Profile extends React.Component {
 
         console.log("Wir fetchen jetzt huer");
         return fetch(`${root}/userImage`, options);
-    }
+    };
 
     saveUser = (idToken) => {
+        (async () => {
+            let userInfoResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+                headers: {Authorization: `Bearer ${this.state.accessToken}`},
+            });
+
+            return await userInfoResponse.json();
+            console.log(userInfoResponse);
+        })();
+
         this.props.newUser({
             userName: this.state.userName,
             picture: this.state.picture,
             phoneNumber: this.state.phoneNumber,
             contacts: this.contacts,
-            idToken: idToken
+            // idToken: idToken
         });
     };
 
+    fetchImage = () => {
+        (async () => {
+            let userInfoResponse = await fetch(this.state.picture, {
+                headers: {Authorization: `Bearer ${this.state.accessToken}`},
+            });
+
+            return await userInfoResponse.json();
+            console.log(userInfoResponse);
+        })();
+    };
+
     clearCookies = () => {
-        RCTNetworking.clearCookies(() => { });
+        RCTNetworking.clearCookies(() => {
+        });
     };
 
     prepareUserCreation = () => {
         (async () => {
-            const { type, idToken, user, accessToken } = await Google.logInAsync({ clientId });
+            const {type, idToken, user, accessToken} = await Google.logInAsync({
+                clientId: clientId,
+                scopes: ["https://www.googleapis.com/auth/devstorage.read_only"]
+            });
             if (type === 'success') {
                 this.setState({
                     userName: this.state.userName || user.name,
@@ -150,7 +176,7 @@ class Profile extends React.Component {
         })();
 
         (async () => {
-            const { data } = await Contacts.getContactsAsync();
+            const {data} = await Contacts.getContactsAsync();
             const contacts = data.map(contact => {
                 return contact.phoneNumbers && contact.phoneNumbers.map(number => {
                     return {
@@ -165,38 +191,48 @@ class Profile extends React.Component {
 
     render() {
         return (
-            <View style={styles.container}>
-                <View style={styles.imageContainer}>
-                    <Image style={styles.image} source={{ uri: this.state.picturePath }} />
-                    <Button
-                        onPress={this._pickImage}
-                        title="Add profile pic"
-                        color="#841584"
-                    />
+            <ScrollView>
+                <View style={styles.container}>
+                    <View style={styles.imageContainer}>
+                        <Image style={styles.image} source={{uri: this.state.picturePath}}/>
+                        <Button
+                            onPress={this._pickImage}
+                            title="Add profile pic"
+                            color="#841584"
+                        />
+                    </View>
+                    <View>
+                        <TextInput style={styles.textInput}
+                                   onChangeText={(userName) => this.setState({userName})}
+                                   value={this.state.userName}
+                                   placeholder="Your userName"/>
+                        <Image style={styles.image} source={{
+                            uri: this.state.picture,
+                            headers: {
+                                Authorization: `Bearer ${this.state.accessToken}`
+                            }
+                        }}/>
+                        <TextInput style={styles.textInput}
+                                   onChangeText={(phoneNumber) => this.setState({phoneNumber})}
+                                   value={this.state.phoneNumber}
+                                   placeholder="Your phone number"/>
+                        <Button title="save"
+                                onPress={this.saveUser}>
+                        </Button>
+
+                        <Button title="Authenticate"
+                                onPress={this.prepareUserCreation}>
+                        </Button>
+
+                        <Button title="clear Cookies"
+                                onPress={this.clearCookies}>
+                        </Button>
+                        <Button title="fetch Image"
+                                onPress={this.fetchImage}>
+                        </Button>
+                    </View>
                 </View>
-                <View>
-                    <TextInput style={styles.textInput}
-                        onChangeText={(userName) => this.setState({ userName })}
-                        value={this.state.userName}
-                        placeholder="Your userName" />
-                    <TextInput style={styles.textInput}
-                        onChangeText={(phoneNumber) => this.setState({ phoneNumber })}
-                        value={this.state.phoneNumber}
-                        placeholder="Your userName" />
-                    <Button title="save"
-                        onPress={this.saveUser}>
-                    </Button>
-
-                    <Button title="Authenticate"
-                        onPress={this.prepareUserCreation}>
-                    </Button>
-
-                    <Button title="clear Cookies"
-                        onPress={this.clearCookies}>
-                    </Button>
-
-                </View>
-            </View>
+            </ScrollView>
         );
     }
 }
@@ -223,13 +259,13 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => {
-    const { auth } = state;
+    const {auth} = state;
     return auth;
 };
 
 function mapDispatchToProps(dispatch) {
     return {
-        ...bindActionCreators({ newUser }, dispatch)
+        ...bindActionCreators({newUser}, dispatch)
     }
 }
 

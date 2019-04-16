@@ -1,4 +1,4 @@
-import { root } from "../constants/network"
+import {root} from "../constants/network"
 
 export function newUser(user) {
     return dispatch => {
@@ -13,7 +13,9 @@ export function newUser(user) {
             body: JSON.stringify(user),
         })
             .then(handleErrors)
-            .then(res => res.json())
+            .then(res => {
+                return res.json();
+            })
             // var cookie = res.headers.get("set-cookie");
             .then(json => {
                 dispatch(newUserSuccess(json));

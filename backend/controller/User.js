@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const util = require("../util/util");
 const auth = require('../util/auth');
-const { Storage } = require('@google-cloud/storage');
+const {Storage} = require('@google-cloud/storage');
 const fs = require('fs');
 const path = require('path');
 
@@ -31,7 +31,7 @@ exports.getCurrentUser = async (ctx, next) => {
 };
 
 exports.uploadUserImage = async (ctx, next, projectId = "dudetime", bucketName = "fredster_182_dudetime") => {
-    const storage = new Storage({ projectId });
+    const storage = new Storage({projectId});
     const bucket = storage.bucket(bucketName);
 
     console.log("Wir sind im upload");
@@ -47,13 +47,17 @@ exports.uploadUserImage = async (ctx, next, projectId = "dudetime", bucketName =
             resumable: false
         }).on('error', function (err) {
             console.log(err);
-        }).on('finish', function (data) {
-            ctx.request.body.avatar.cloudStoragePublicUrl = getPublicUrl(gcsname);
-            ctx.body = {picturePath: ctx.request.body.avatar.cloudStoragePublicUrl}
-            next();
+        }).on('finish', async () => {
+            console.log("finish");
         });
 
-        uploadFile.pipe(stream);
+        await uploadFile.pipe(stream);
+
+        ctx.request.body.avatar.cloudStoragePublicUrl = getPublicUrl(gcsname);
+        await next();
+        // ctx.body = {picturePath: ctx.request.body.avatar.cloudStoragePublicUrl};
+        // stream.end();
+        // await next();
     }
 };
 
@@ -73,10 +77,10 @@ exports.geUsers = async (ctx, next) => {
         // ctx.body = users
     }
     return users;
-}
+};
 
 exports.updateUserPicture = async (ctx) => {
-    const user = await User.updateOne({ id: ctx.session.userId }, { picturePath: ctx.request.body.avatar.cloudStoragePublicUrl });
+    const user = await User.updateOne({id: ctx.session.userId}, {picturePath: ctx.request.body.avatar.cloudStoragePublicUrl});
     ctx.body = {picturePath: ctx.request.body.avatar.cloudStoragePublicUrl};
 };
 
@@ -93,15 +97,15 @@ exports.handleUser = async (ctx) => {
         user = await User.findById(ctx.session.userId);
     }
     if (ctx.request.body.authId) {
-        user = await User.findOne({ authId: ctx.request.body.authId });
+        user = await User.findOne({authId: ctx.request.body.authId});
     }
     if (!user) {
         user = await User.create({
             userName: ctx.request.body.userName,
             picturePath: ctx.request.body.picturePath,
             phoneNumber: ctx.request.body.phoneNumber,
-            contacts: ctx.request.body.contacts,
-            authId: ctx.request.body.authId,
+            // contacts: ctx.request.body.contacts,
+            authId: ctx.request.body.authId || "dummyAuth",
         });
     }
 
