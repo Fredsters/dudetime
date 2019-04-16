@@ -5,7 +5,8 @@ import colors from "../constants/Colors.js"
 import {bindActionCreators} from 'redux';
 import {newUser} from "../redux/AuthAction";
 import {Contacts, Google, ImagePicker, Permissions} from 'expo';
-import {clientId, root} from "../constants/network";
+import {root} from "../constants/network";
+import * as firebase from 'firebase';
 
 var RCTNetworking = require("RCTNetworking");
 
@@ -17,7 +18,7 @@ class Profile extends React.Component {
 
     async componentDidMount() {
         if (!(this.props.auth && this.props.auth.userId)) {
-            this.prepareUserCreation();
+            // this.prepareUserCreation();
         } else {
             this.state = {
                 userName: this.props.user.userName,
@@ -34,6 +35,16 @@ class Profile extends React.Component {
         // } else {
         //     //todo handle this stuff
         // }
+        var firebaseConfig = {
+            apiKey: "AIzaSyD5HTklqZCLHaoB-x0tLbg5B2Wex4_B3_s",
+            authDomain: "dudetime.firebaseapp.com",
+            databaseURL: "https://dudetime.firebaseio.com",
+            projectId: "dudetime",
+            storageBucket: "dudetime.appspot.com",
+            messagingSenderId: "216116664350"
+        };
+
+        firebase.initializeApp(firebaseConfig);
     }
 
     _pickImage = async () => {
@@ -66,13 +77,13 @@ class Profile extends React.Component {
 
             if (!pickerResult.cancelled) {
                 this.setState({picturePath: pickerResult.uri});
-                uploadResponse = await this.uploadImageAsync(pickerResult.uri);
-                uploadResult = await uploadResponse.json();
-
-                this.setState({
-                    picturePath: uploadResult.picturePath,
-                    picture: uploadResult.picturePath
-                });
+                // uploadResponse = await this.uploadImageAsync(pickerResult.uri);
+                // uploadResult = await uploadResponse.json();
+                //
+                // this.setState({
+                //     // picturePath: uploadResult.picturePath,
+                //     picture: uploadResult.picturePath
+                // });
             }
         } catch (e) {
             console.log({uploadResponse});
@@ -152,6 +163,88 @@ class Profile extends React.Component {
         })();
     };
 
+    // storeImage = () => {
+    //     const storageRef = firebase.storage().ref();
+    //     var mountainsRef = storageRef.child('mountains.jpg');
+    //     mountainsRef.put(this.state.picturePath).then(function (snapshot) {
+    //         console.log('Uploaded a blob or file!');
+    //     });
+    //
+    // };
+
+    storeImage = async () => {
+        const uri = this.state.picturePath;
+        // Why are we using XMLHttpRequest? See:
+        // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+        const blob = await
+            new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.onload = function () {
+                    resolve(xhr.response);
+                };
+                xhr.onerror = function (e) {
+                    console.log(e);
+                    reject(new TypeError('Network request failed'));
+                };
+                xhr.responseType = 'blob';
+                xhr.open('GET', uri, true);
+                xhr.send(null);
+            });
+
+        const ref = firebase
+            .storage()
+            .ref()
+            .child("random_lala");
+        const snapshot = await
+            ref.put(blob);
+
+        // We're done with the blob, close and release it
+        blob.close();
+
+        let url = await snapshot.ref.getDownloadURL();
+        this.setState({picture: url});
+    };
+
+    loadImage = () => {
+        // Create a reference with an initial file path and name
+        var storage = firebase.storage();
+        storage.ref().child('mountains.jpg').getDownloadURL().then(function (url) {
+            // `url` is the download URL for 'images/stars.jpg'
+
+            // This can be downloaded directly:
+            fetch(url, {
+                method: "GET"
+            }).then(function (oData) {
+                console.log(oData);
+            });
+
+            // var xhr = new XMLHttpRequest();
+            // xhr.responseType = 'blob';
+            // xhr.onload = function (event) {
+            //     var blob = xhr.response;
+            // };
+            // xhr.open('GET', url);
+            // xhr.send();
+            //
+            // // Or inserted into an <img> element:
+            // var img = document.getElementById('myimg');
+            // img.src = url;
+        }).catch(function (error) {
+            // Handle any errors
+        });
+    };
+
+    storeHighScore = () => {
+
+    };
+
+    setupHighscoreListener = () => {
+        firebase.storage().ref('users/' + 123).on('value', (snapshot) => {
+            const image = snapshot.val().image;
+            console.log("New high score: " + image);
+        });
+    };
+
     clearCookies = () => {
         RCTNetworking.clearCookies(() => {
         });
@@ -160,8 +253,10 @@ class Profile extends React.Component {
     prepareUserCreation = () => {
         (async () => {
             const {type, idToken, user, accessToken} = await Google.logInAsync({
-                clientId: clientId,
-                scopes: ["https://www.googleapis.com/auth/devstorage.read_only"]
+                //216116664350-7p98cv183u24pvcd41alaajsg3q80jto.apps.googleusercontent.com
+                // clientId: "216116664350-aaq061uou5m0kjo6ptpi5lhqj11bpm0r.apps.googleusercontent.com",
+                clientId: "216116664350-7p98cv183u24pvcd41alaajsg3q80jto.apps.googleusercontent.com",
+                scopes: ["profile", "email"]
             });
             if (type === 'success') {
                 this.setState({
@@ -169,24 +264,35 @@ class Profile extends React.Component {
                     picturePath: this.state.picturePath || user.photoUrl,
                     idToken: idToken, //for auth on server
                     accessToken: accessToken //for google api
-                })
+                });
+                const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken);
+                firebase
+                    .auth()
+                    .signInAndRetrieveDataWithCredential(credential)
+                    .then(res => {
+                        console.log(res);
+                        // user res, create your user, do whatever you want
+                    })
+                    .catch(error => {
+                        console.log("firebase cred err:", error);
+                    });
             } else {
                 //todo do some error message
             }
         })();
 
-        (async () => {
-            const {data} = await Contacts.getContactsAsync();
-            const contacts = data.map(contact => {
-                return contact.phoneNumbers && contact.phoneNumbers.map(number => {
-                    return {
-                        "countryCode": number.countryCode,
-                        "number": number.digits
-                    }
-                }).flat();
-            }).flat().filter(number => !!number);
-            this.contacts = contacts;
-        })();
+        // (async () => {
+        //     const {data} = await Contacts.getContactsAsync();
+        //     const contacts = data.map(contact => {
+        //         return contact.phoneNumbers && contact.phoneNumbers.map(number => {
+        //             return {
+        //                 "countryCode": number.countryCode,
+        //                 "number": number.digits
+        //             }
+        //         }).flat();
+        //     }).flat().filter(number => !!number);
+        //     this.contacts = contacts;
+        // })();
     };
 
     render() {
@@ -207,10 +313,7 @@ class Profile extends React.Component {
                                    value={this.state.userName}
                                    placeholder="Your userName"/>
                         <Image style={styles.image} source={{
-                            uri: this.state.picture,
-                            headers: {
-                                Authorization: `Bearer ${this.state.accessToken}`
-                            }
+                            uri: this.state.picture
                         }}/>
                         <TextInput style={styles.textInput}
                                    onChangeText={(phoneNumber) => this.setState({phoneNumber})}
@@ -229,6 +332,12 @@ class Profile extends React.Component {
                         </Button>
                         <Button title="fetch Image"
                                 onPress={this.fetchImage}>
+                        </Button>
+                        <Button title="store Image"
+                                onPress={this.storeImage}>
+                        </Button>
+                        <Button title="load Image from fire"
+                                onPress={this.loadImage}>
                         </Button>
                     </View>
                 </View>
