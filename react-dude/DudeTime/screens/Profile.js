@@ -5,8 +5,12 @@ import colors from "../constants/Colors.js"
 import {bindActionCreators} from 'redux';
 import {newUser} from "../redux/AuthAction";
 import {Contacts, Google, ImagePicker, Permissions} from 'expo';
-import {clientId, root} from "../constants/network";
+import {clientId} from "../constants/network";
+import myFirebase from "../network/firebase";
 import * as firebase from 'firebase';
+
+import phone from "../network/phone";
+
 
 var RCTNetworking = require("RCTNetworking");
 
@@ -17,27 +21,62 @@ class Profile extends React.Component {
     }
 
     async componentDidMount() {
-        if (!(this.props.auth && this.props.auth.userId)) {
-            // this.prepareUserCreation();
-        } else {
-            this.state = {
-                userName: this.props.user.userName,
-                picturePath: this.props.user.picturePath
-            };
-        }
+        this.retrieveContacts(); //Todo contacts in backend needs to be updated regularly
 
-        // const permission = await Permissions.getAsync(Permissions.CAMERA_ROLL);
-        // if (permission.status !== 'granted') {
-        //     const newPermission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-        //     if (newPermission.status === 'granted') {
-        //         //its granted.
-        //     }
-        // } else {
-        //     //todo handle this stuff
-        // }
-
-        firebase.initializeApp(firebaseConfig);
+        firebase.auth().onAuthStateChanged(async (user) => {
+            if (user) {
+                this.state = {
+                    userName: this.props.user.userName || user.displayName,
+                    picturePath: this.props.user.picturePath || user.photoURL
+                };
+            } else {
+                await this.login();
+            }
+        });
     }
+
+    login = async () => {
+        try {
+            const {type, idToken, accessToken} = await Google.logInAsync({
+                clientId: clientId
+            });
+            if (type === 'success') {
+                this.idToken = idToken;//for auth on server
+                this.accessToken = accessToken; //for google api
+
+                //ignore RefreshToken and result of firebase auth, because we have accessToken, and idToken already from google login
+                myFirebase.login(idToken, accessToken);
+            } else {
+                alert("You are not authorized dude!");
+            }
+        } catch (e) {
+            console.log("Error authenticating the user", e);
+            alert("The authentication failed, dammit!!");
+        }
+    };
+
+    retrieveContacts = async () => {
+        const {data} = await Contacts.getContactsAsync();
+        const contacts = data.map(contact => {
+            return contact.phoneNumbers && contact.phoneNumbers.map(number => {
+                return {
+                    "countryCode": number.countryCode,
+                    "number": number.digits
+                }
+            }).flat();
+        }).flat().filter(number => !!number);
+        this.contacts = contacts;
+    };
+
+    saveUser = () => {
+        this.props.newUser({
+            userName: this.state.userName,
+            picture: this.state.picture,
+            phoneNumber: this.state.phoneNumber,
+            contacts: this.contacts,
+            idToken: this.idToken
+        });
+    };
 
     _pickImage = async () => {
         const {
@@ -51,249 +90,39 @@ class Profile extends React.Component {
                 aspect: [4, 3],
                 mediaTypes: "Images"
             });
-
-            // if (!pickerResult.cancelled) {
-
-            this._handleImagePicked(pickerResult);
-            // }
-        }
-    };
-
-    _handleImagePicked = async pickerResult => {
-        let uploadResponse, uploadResult;
-
-        try {
-            this.setState({
-                uploading: true
-            });
-
             if (!pickerResult.cancelled) {
-                this.setState({picturePath: pickerResult.uri});
-                // uploadResponse = await this.uploadImageAsync(pickerResult.uri);
-                // uploadResult = await uploadResponse.json();
-                //
-                // this.setState({
-                //     // picturePath: uploadResult.picturePath,
-                //     picture: uploadResult.picturePath
-                // });
+                //todo upload Image here
             }
-        } catch (e) {
-            console.log({uploadResponse});
-            console.log({uploadResult});
-            console.log({e});
-            alert('Upload failed, sorry :(');
-        } finally {
-            this.setState({
-                uploading: false
-            });
         }
     };
 
-
-    uploadImageAsync = async (uri) => {
-        //Todo set the url
-        // let apiUrl = 'https://file-upload-example-backend-dkhqoilqqn.now.sh/upload';
-
-        // Note:
-        // Uncomment this if you want to experiment with local server
-        //
-        // if (Constants.isDevice) {
-        //   apiUrl = `https://your-ngrok-subdomain.ngrok.io/upload`;
-        // } else {
-        //   apiUrl = `http://localhost:3000/upload`
-        // }
-
-        let uriParts = uri.split('.');
-        let fileType = uriParts[uriParts.length - 1];
-
-        let formData = new FormData();
-        formData.append('avatar', {
-            uri,
-            name: `avatar_${this.state.userName}.${fileType}`,
-            type: `image/${fileType}`,
-        });
-
-        let options = {
-            method: 'POST',
-            body: formData,
-            headers: {
-                Accept: 'application/json'
-            },
-        };
-
-        console.log("Wir fetchen jetzt huer");
-        return fetch(`${root}/userImage`, options);
-    };
-
-    saveUser = (idToken) => {
-        (async () => {
-            let userInfoResponse = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-                headers: {Authorization: `Bearer ${this.state.accessToken}`},
-            });
-
-            return await userInfoResponse.json();
-            console.log(userInfoResponse);
-        })();
-
-        this.props.newUser({
-            userName: this.state.userName,
-            picture: this.state.picture,
-            phoneNumber: this.state.phoneNumber,
-            contacts: this.contacts,
-            // idToken: idToken
-        });
-    };
-
-    fetchImage = () => {
-        (async () => {
-            let userInfoResponse = await fetch(this.state.picture, {
-                headers: {Authorization: `Bearer ${this.state.accessToken}`},
-            });
-
-            return await userInfoResponse.json();
-            console.log(userInfoResponse);
-        })();
-    };
-
-    // storeImage = () => {
-    //     const storageRef = firebase.storage().ref();
-    //     var mountainsRef = storageRef.child('mountains.jpg');
-    //     mountainsRef.put(this.state.picturePath).then(function (snapshot) {
-    //         console.log('Uploaded a blob or file!');
-    //     });
-    //
-    // };
-
-    storeImage = async () => {
+    uploadImage = async () => {
         const uri = this.state.picturePath;
-        // Why are we using XMLHttpRequest? See:
-        // https://github.com/expo/expo/issues/2402#issuecomment-443726662
-        const blob = await
-            new Promise((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                xhr.onload = function () {
-                    resolve(xhr.response);
-                };
-                xhr.onerror = function (e) {
-                    console.log(e);
-                    reject(new TypeError('Network request failed'));
-                };
-                xhr.responseType = 'blob';
-                xhr.open('GET', uri, true);
-                xhr.send(null);
-            });
-
-        // console.log(firebase.auth().currentUser.email);
-        const ref = firebase
-            .storage()
-            .ref()
-            .child("random_lala_" + Math.random());
-        const snapshot = await
-            ref.put(blob);
-
-        // We're done with the blob, close and release it
-        blob.close();
-
-        let url = await snapshot.ref.getDownloadURL();
-        this.setState({picture: url});
-    };
-
-    loadImage = () => {
-        // Create a reference with an initial file path and name
-        var storage = firebase.storage();
-        storage.ref().child('mountains.jpg').getDownloadURL().then(function (url) {
-            // `url` is the download URL for 'images/stars.jpg'
-
-            // This can be downloaded directly:
-            fetch(url, {
-                method: "GET"
-            }).then(function (oData) {
-                console.log(oData);
-            });
-
-            // var xhr = new XMLHttpRequest();
-            // xhr.responseType = 'blob';
-            // xhr.onload = function (event) {
-            //     var blob = xhr.response;
-            // };
-            // xhr.open('GET', url);
-            // xhr.send();
-            //
-            // // Or inserted into an <img> element:
-            // var img = document.getElementById('myimg');
-            // img.src = url;
-        }).catch(function (error) {
-            // Handle any errors
-        });
-    };
-
-    storeHighScore = () => {
-
-    };
-
-    setupHighscoreListener = () => {
-        firebase.storage().ref('users/' + 123).on('value', (snapshot) => {
-            const image = snapshot.val().image;
-            console.log("New high score: " + image);
-        });
+        const phoneImage = await phone.retrieveImage(uri);
+        const imageUrl = await myFirebase.uploadImage(`${uuid.v4()}-${new Date()}`, phoneImage);
+        phoneImage.close();
+        //todo store imageUrl in mongoDB
+        this.setState({picture: imageUrl});
     };
 
     clearCookies = () => {
         RCTNetworking.clearCookies(() => {
         });
     };
+
     logout = async () => {
-        const clientId = clientId;
-
-        /* Log-Out */
-        let accessToken = this.state.accessToken;
-        await Google.logOutAsync({clientId, accessToken});
-
-        await firebase.auth().signOut();
-        /* `accessToken` is now invalid and cannot be used to get data from the Google API with HTTP requests */
-    };
-
-    prepareUserCreation = () => {
-        (async () => {
-            const {type, idToken, user, accessToken} = await Google.logInAsync({
-                clientId: clientId,
-                scopes: ["profile", "email"]
-            });
-            if (type === 'success') {
-                this.setState({
-                    userName: this.state.userName || user.name,
-                    picturePath: this.state.picturePath || user.photoUrl,
-                    idToken: idToken, //for auth on server
-                    accessToken: accessToken //for google api
-                });
-                const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken);
-                firebase
-                    .auth()
-                    .signInAndRetrieveDataWithCredential(credential)
-                    .then(res => {
-                        console.log(res);
-                        // user res, create your user, do whatever you want
-                    })
-                    .catch(error => {
-                        console.log("firebase cred err:", error);
-                    });
-            } else {
-                //todo do some error message
+        try {
+            const accessToken = this.accessToken;
+            if (accessToken && clientId) {
+                console.log(clientId);
+                await Google.logOutAsync({clientId, accessToken});
+                this.accessToken = null;
             }
-        })();
-
-        // (async () => {
-        //     const {data} = await Contacts.getContactsAsync();
-        //     const contacts = data.map(contact => {
-        //         return contact.phoneNumbers && contact.phoneNumbers.map(number => {
-        //             return {
-        //                 "countryCode": number.countryCode,
-        //                 "number": number.digits
-        //             }
-        //         }).flat();
-        //     }).flat().filter(number => !!number);
-        //     this.contacts = contacts;
-        // })();
+            await firebase.auth().signOut();
+        }
+        catch (e) {
+            alert("Dude whats wrong, singing out failed, dammit!!");
+        }
     };
 
     render() {
@@ -325,20 +154,14 @@ class Profile extends React.Component {
                         </Button>
 
                         <Button title="Authenticate"
-                                onPress={this.prepareUserCreation}>
+                                onPress={this.login}>
                         </Button>
 
                         <Button title="clear Cookies"
                                 onPress={this.clearCookies}>
                         </Button>
-                        <Button title="fetch Image"
-                                onPress={this.fetchImage}>
-                        </Button>
                         <Button title="store Image"
-                                onPress={this.storeImage}>
-                        </Button>
-                        <Button title="load Image from fire"
-                                onPress={this.loadImage}>
+                                onPress={this.uploadImage}>
                         </Button>
                         <Button title="logout"
                                 onPress={this.logout}>
