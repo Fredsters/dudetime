@@ -1,5 +1,5 @@
-import UUIDGenerator from 'react-native-uuid-generator';
 import * as firebase from 'firebase';
+import uuid from 'react-native-uuid';
 
 const firebaseConfig = {
 
@@ -9,14 +9,13 @@ firebase.initializeApp(firebaseConfig);
 
 firebase.uploadImage = async (blob) => {
     try {
-        return UUIDGenerator.getRandomUUID().then(async (uuid) => {
-            const ref = firebase
-                .storage()
-                .ref()
-                .child(`${uuid}-${new Date()}`);
-            const snapshot = await ref.put(blob);
-            return await snapshot.ref.getDownloadURL();
-        });
+        //todo doesn't work, uuid is undefined
+        const ref = firebase
+            .storage()
+            .ref()
+            .child(`${uuid.v4()}-${new Date()}`);
+        const snapshot = await ref.put(blob);
+        return await snapshot.ref.getDownloadURL();
     } catch (ex) {
         alert('Upload failed, sorry :(');
         console.log("Error retrieving", ex);
