@@ -3,7 +3,7 @@ import {Button, Image, ScrollView, StyleSheet, TextInput, View} from 'react-nati
 import {connect} from "react-redux";
 import colors from "../constants/Colors.js"
 import {bindActionCreators} from 'redux';
-import {newUser} from "../redux/AuthAction";
+import {newUser, updateUser, updateProfilePicture} from "../redux/AuthAction";
 import {Contacts, Google, ImagePicker, Permissions} from 'expo';
 import {clientId} from "../constants/network";
 import myFirebase from "../network/firebase";
@@ -17,18 +17,23 @@ var RCTNetworking = require("RCTNetworking");
 class Profile extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            userName: this.props.user.userName,
+            picturePath: this.props.user.picturePath,
+            phoneNumber: this.props.user.phoneNumber
+        };
     }
 
     async componentDidMount() {
+
         this.retrieveContacts(); //Todo contacts in backend needs to be updated regularly
 
         firebase.auth().onAuthStateChanged(async (user) => {
             if (user) {
-                this.state = {
+                this.setState({
                     userName: this.props.user.userName || user.displayName,
                     picturePath: this.props.user.picturePath || user.photoURL
-                };
+                });
             } else {
                 await this.login();
             }
@@ -69,13 +74,20 @@ class Profile extends React.Component {
     };
 
     saveUser = () => {
-        this.props.newUser({
-            userName: this.state.userName,
-            picture: this.state.picture,
-            phoneNumber: this.state.phoneNumber,
-            contacts: this.contacts,
-            idToken: this.idToken
-        });
+        if (this.props.user && this.props.user.id) {
+            this.props.updateUser({
+                userName: this.state.userName,
+                contacts: this.contacts
+            });
+        } else {
+            this.props.newUser({
+                userName: this.state.userName,
+                picturePath: this.state.picturePath,
+                phoneNumber: this.state.phoneNumber,
+                contacts: this.contacts,
+                idToken: this.idToken
+            });
+        }
     };
 
     _pickImage = async () => {
@@ -91,18 +103,22 @@ class Profile extends React.Component {
                 mediaTypes: "Images"
             });
             if (!pickerResult.cancelled) {
-                //todo upload Image here
+                this.uploadImage(pickerResult.uri);
             }
         }
     };
 
-    uploadImage = async () => {
-        const uri = this.state.picturePath;
-        const phoneImage = await phone.retrieveImage(uri);
-        const imageUrl = await myFirebase.uploadImage(`${uuid.v4()}-${new Date()}`, phoneImage);
+    uploadImage = async (localImageUri) => {
+        const phoneImage = await phone.retrieveImage(localImageUri);
+        const imageUrl = await myFirebase.uploadImage(phoneImage);
         phoneImage.close();
-        //todo store imageUrl in mongoDB
+        //todo store image directly in mongodb when user exists
         this.setState({picture: imageUrl});
+        this.setState({picturePath: imageUrl});
+
+        if(this.props.user && this.props.user.id) {
+            //todo this.props.updateImage
+        }
     };
 
     clearCookies = () => {
@@ -114,7 +130,6 @@ class Profile extends React.Component {
         try {
             const accessToken = this.accessToken;
             if (accessToken && clientId) {
-                console.log(clientId);
                 await Google.logOutAsync({clientId, accessToken});
                 this.accessToken = null;
             }
@@ -201,7 +216,7 @@ const mapStateToProps = (state) => {
 
 function mapDispatchToProps(dispatch) {
     return {
-        ...bindActionCreators({newUser}, dispatch)
+        ...bindActionCreators({newUser, updateUser, updateProfilePicture}, dispatch)
     }
 }
 

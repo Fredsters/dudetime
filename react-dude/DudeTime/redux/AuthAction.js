@@ -13,9 +13,7 @@ export function newUser(user) {
             body: JSON.stringify(user),
         })
             .then(handleErrors)
-            .then(res => {
-                return res.json();
-            })
+            .then(res => res.json())
             // var cookie = res.headers.get("set-cookie");
             .then(json => {
                 dispatch(newUserSuccess(json));
@@ -24,6 +22,31 @@ export function newUser(user) {
             .catch(error => dispatch(newUserFailure(error)));
     };
 }
+
+// export function updateUser(user) {
+//     return dispatch => {
+//         dispatch(updateUserBegin());
+//         return fetch(`${root}/users`, {
+//             method: 'PUT',
+//             headers: {
+//                 Accept: 'application/json',
+//                 'Content-Type': 'application/json',
+//             },
+//             credentials: 'same-origin',
+//             body: JSON.stringify(user),
+//         })
+//             .then(handleErrors)
+//             .then(res => res.json())
+//             // var cookie = res.headers.get("set-cookie");
+//             .then(json => {
+//                 dispatch(newUserSuccess(json));
+//                 return json;
+//             })
+//             .catch(error => dispatch(newUserFailure(error)));
+//     };
+// }
+
+
 
 
 // Handle HTTP errors since fetch won't.

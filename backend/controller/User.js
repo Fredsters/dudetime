@@ -30,6 +30,7 @@ exports.getCurrentUser = async (ctx, next) => {
     }
 };
 
+//deprecated ^^
 exports.uploadUserImage = async (ctx, next, projectId = "dudetime", bucketName = "fredster_182_dudetime") => {
     const storage = new Storage({projectId});
     const bucket = storage.bucket(bucketName);
@@ -79,25 +80,27 @@ exports.geUsers = async (ctx, next) => {
     return users;
 };
 
+//deprecated
 exports.updateUserPicture = async (ctx) => {
     const user = await User.updateOne({id: ctx.session.userId}, {picturePath: ctx.request.body.avatar.cloudStoragePublicUrl});
     ctx.body = {picturePath: ctx.request.body.avatar.cloudStoragePublicUrl};
 };
 
-exports.handleUser = async (ctx) => {
+exports.handleNewUser = async (ctx) => {
     console.log("create User");
     //todo maybe add current location
-    if (!ctx.request.body.userName) {
-        ctx.request.body.userName = "userName " + util.getRandom(100);
-        // ctx.request.body.phoneNumber = "phoneNumber " + util.getRandom(100000);
-    }
+    //todo do the contact to user mapping
+    // if (!ctx.request.body.userName) {
+    //     ctx.request.body.userName = "userName " + util.getRandom(100);
+    //     // ctx.request.body.phoneNumber = "phoneNumber " + util.getRandom(100000);
+    // }
 
     let user = null;
     if (ctx.session.userId) {
         user = await User.findById(ctx.session.userId);
     }
-    if (ctx.request.body.authId) {
-        user = await User.findOne({authId: ctx.request.body.authId});
+    if (!user && ctx.request.body.nodeAuthId) {
+        user = await User.findOne({nodeAuthId: ctx.request.body.nodeAuthId});
     }
     if (!user) {
         user = await User.create({
@@ -105,7 +108,7 @@ exports.handleUser = async (ctx) => {
             picturePath: ctx.request.body.picturePath,
             phoneNumber: ctx.request.body.phoneNumber,
             // contacts: ctx.request.body.contacts,
-            authId: ctx.request.body.authId || "dummyAuth",
+            nodeAuthId: ctx.request.body.nodeAuthId || "dummyAuth",
         });
     }
 
