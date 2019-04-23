@@ -5,4 +5,4 @@ data/
 .expo/
 images/
 .env
-constants/network.js
+react-dude/DudeTime/constants/network.js
