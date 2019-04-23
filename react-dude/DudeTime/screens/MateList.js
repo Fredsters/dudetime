@@ -26,7 +26,6 @@ class MateList extends React.Component {
             return <Text>Error! {error.message}</Text>;
         }
 
-        console.log(this.state);
         if (loading) {
             return <Text>Loading...</Text>;
         }

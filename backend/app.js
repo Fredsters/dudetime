@@ -67,9 +67,13 @@ router
     .get('/contacts/:id', user.getUserContacts)
     // .get('/users', user.getUsers)
     .get("/currentUser", user.getCurrentUser)
+    .patch('/users/contacts', user.updateUserContacts)
     .post('/users', user.handleNewUser)
+    .patch('/users', user.updateUser)
+    .patch('/users/profilePicture', user.updateUserPicture)
     .get('/mates', mate.getMates)
     .post('/mates', mate.createMate);
+
 // .post('/userImage', user.uploadUserImage, user.updateUserPicture);
 
 app

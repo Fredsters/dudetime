@@ -43,9 +43,6 @@ class MateItem extends React.Component {
 
 
     handleMyFunc = (mateStatus) => {
-        console.log("DO ITTTTT MANAAA");
-        console.log(mateStatus);
-        console.log("current id: " + this.props.item._id);
         this.props.acceptMate(this.props.item._id);
         // acceptMate(this.props.item._id);
     };
