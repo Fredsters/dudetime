@@ -5,3 +5,4 @@ data/
 .expo/
 images/
 .env
+constants/network.js
