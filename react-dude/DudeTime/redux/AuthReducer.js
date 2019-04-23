@@ -1,4 +1,4 @@
-import { NEW_USER_BEGIN, NEW_USER_FAILURE, NEW_USER_SUCCESS } from './AuthAction';
+import { USER_BEGIN, USER_FAILURE, NEW_USER_SUCCESS, UPDATE_USER_SUCCESS, UPDATE_USER_IMAGE_SUCCESS } from './AuthAction';
 
 const initialState = {
     user: {},
@@ -8,11 +8,10 @@ const initialState = {
 
 export default function mateReducer(state = initialState, action) {
     switch (action.type) {
-        case NEW_USER_BEGIN:
+        case USER_BEGIN:
             return {
                 ...state,
             };
-
         case NEW_USER_SUCCESS:
             return {
                 ...state,
@@ -23,11 +22,27 @@ export default function mateReducer(state = initialState, action) {
                     picturePath: action.user.picturePath
                 }
             };
-
-        case NEW_USER_FAILURE:
+        case USER_FAILURE:
             return {
                 ...state,
                 error: action.error
+            };
+        case UPDATE_USER_SUCCESS:
+            return {
+                ...state,
+                user: {
+                    ...user,
+                    phoneNumber: action.user.phoneNumber,
+                    userName: action.user.userName
+                }
+            };
+        case UPDATE_USER_IMAGE_SUCCESS:
+            return {
+                ...state,
+                user: {
+                    ...user,
+                    picturePath: action.picturePath
+                }
             };
         default:
             return state;

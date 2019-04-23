@@ -4,23 +4,12 @@ const Koa = require('koa'),
     user = require('./controller/user'),
     mate = require('./controller/mate'),
     db = require('./database').db,
-    path = require('path')
-koaBody = require('koa-body')({
-    // multipart: true,
-    // formidable: { memoryStore: true, multiples: false }
-}),
-    // multer = require('koa-multer'),
-    // upload = multer({
-    //     storage: multer.memoryStorage(),
-    //     limits: {
-    //         fileSize: 5 * 1024 * 1024 // no larger than 5mb
-    //     }
-    // });
-    Multy = require('multy'),
+    koaBody = require('koa-body')({}),
     session = require('koa-session'),
     auth = require('./util/auth');
 require('dotenv').config();
 
+//Multy = require('multy'), was used for image piping
 
 
 app.use(async (ctx, next) => {
@@ -54,14 +43,16 @@ const CONFIG = {
 app.use(session(CONFIG, app));
 app.use(koaBody);
 
+//router.use(Multy()); was used for image piping
+
 // app.use(async (ctx, next) => {
 //     //todo store session cookie in db ?
 //     //todo check how to handle expired session
 //     const token = ctx.request.body.idToken;
 //     if (ctx.session.userId || token) {
 //         if (token) {
-//             const authId = await auth.verify(token)
-//             ctx.request.body.authId = authId;
+//             const nodeAuthId = await auth.verify(token);
+//             ctx.request.body.nodeAuthId = nodeAuthId;
 //         }
 //         await next();
 //         if (token) {
@@ -71,16 +62,19 @@ app.use(koaBody);
 //         ctx.throw(401, 'No valid session');
 //     }
 // });
-router.use(Multy());
 
 router
     .get('/contacts/:id', user.getUserContacts)
     // .get('/users', user.getUsers)
     .get("/currentUser", user.getCurrentUser)
-    .post('/users', user.handleUser)
+    .patch('/users/contacts', user.updateUserContacts)
+    .post('/users', user.handleNewUser)
+    .patch('/users', user.updateUser)
+    .patch('/users/profilePicture', user.updateUserPicture)
     .get('/mates', mate.getMates)
-    .post('/mates', mate.createMate)
-    .post('/userImage', user.uploadUserImage, user.updateUserPicture);
+    .post('/mates', mate.createMate);
+
+// .post('/userImage', user.uploadUserImage, user.updateUserPicture);
 
 app
     .use(router.routes())

@@ -1,51 +1,65 @@
-import {root} from "../constants/network"
+import { root } from "../constants/network"
+import { serverFetch } from "../network/server"
 
 export function newUser(user) {
-    return dispatch => {
-        dispatch(newUserBegin());
-        return fetch(`${root}/users`, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            credentials: 'same-origin',
-            body: JSON.stringify(user),
-        })
-            .then(handleErrors)
-            .then(res => {
-                return res.json();
-            })
-            // var cookie = res.headers.get("set-cookie");
+    return async (dispatch) => {
+        dispatch(userBegin());
+        return serverFetch(`${root}/users`, 'POST', user)
             .then(json => {
                 dispatch(newUserSuccess(json));
                 return json;
             })
-            .catch(error => dispatch(newUserFailure(error)));
+            .catch(error => dispatch(userFailure(error)));
     };
 }
 
-
-// Handle HTTP errors since fetch won't.
-function handleErrors(response) {
-    if (!response.ok) {
-        throw Error(response.statusText);
-    }
-    return response;
+export function updateUser(user) {
+    return async (dispatch) => {
+        dispatch(userBegin());
+        return serverFetch(`${root}/users`, 'PATCH', user)
+            .then(json => {
+                dispatch(updateUserSuccess(json));
+                return json;
+            })
+            .catch(error => dispatch(userFailure(error)));
+    };
 }
 
-export const NEW_USER_BEGIN = 'NEW_USER_BEGIN';
-export const NEW_USER_SUCCESS = 'NEW_USER_SUCCESS';
-export const NEW_USER_FAILURE = 'NEW_USER_FAILURE';
+export function updateProfilePicture(picturePath) {
+    return async (dispatch) => {
+        dispatch(userBegin());
+        return serverFetch(`${root}/users/profilePicture`, 'PATCH', picturePath)
+            .then(json => {
+                dispatch(updateUserImageSuccess(json));
+                return json;
+            })
+            .catch(error => dispatch(userFailure(error)));
+    };
+}
 
-export const newUserBegin = () => ({
-    type: NEW_USER_BEGIN
+export const USER_BEGIN = 'USER_BEGIN';
+export const USER_FAILURE = 'USER_FAILURE';
+export const NEW_USER_SUCCESS = 'NEW_USER_SUCCESS';
+export const UPDATE_USER_SUCCESS = 'UPDATE_USER_SUCCESS';
+export const UPDATE_USER_IMAGE_SUCCESS = 'UPDATE_USER_IMAGE_SUCCESS';
+
+
+export const userBegin = () => ({
+    type: USER_BEGIN
+});
+
+export const userFailure = error => ({
+    type: USER_FAILURE, error
 });
 
 export const newUserSuccess = user => ({
     type: NEW_USER_SUCCESS, user
 });
 
-export const newUserFailure = error => ({
-    type: NEW_USER_FAILURE, error
+export const updateUserSuccess = user => ({
+    type: UPDATE_USER_SUCCESS, user
+});
+
+export const updateUserImageSuccess = picturePath => ({
+    type: UPDATE_USER_IMAGE_SUCCESS, picturePath
 });

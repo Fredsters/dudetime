@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const util = require("../util/util");
 const auth = require('../util/auth');
-const {Storage} = require('@google-cloud/storage');
+const { Storage } = require('@google-cloud/storage');
 const fs = require('fs');
 const path = require('path');
 
@@ -30,8 +30,9 @@ exports.getCurrentUser = async (ctx, next) => {
     }
 };
 
+//deprecated ^^
 exports.uploadUserImage = async (ctx, next, projectId = "dudetime", bucketName = "fredster_182_dudetime") => {
-    const storage = new Storage({projectId});
+    const storage = new Storage({ projectId });
     const bucket = storage.bucket(bucketName);
 
     console.log("Wir sind im upload");
@@ -61,6 +62,7 @@ exports.uploadUserImage = async (ctx, next, projectId = "dudetime", bucketName =
     }
 };
 
+//deprecated
 function getPublicUrl(filename) {
     return `https://storage.googleapis.com/fredster_182_dudetime/${filename}`;
 }
@@ -80,32 +82,40 @@ exports.geUsers = async (ctx, next) => {
 };
 
 exports.updateUserPicture = async (ctx) => {
-    const user = await User.updateOne({id: ctx.session.userId}, {picturePath: ctx.request.body.avatar.cloudStoragePublicUrl});
-    ctx.body = {picturePath: ctx.request.body.avatar.cloudStoragePublicUrl};
+    console.log("update UserPicture");
+    const user = await User.findOneAndUpdate({ id: ctx.session.userId }, { picturePath: ctx.request.body.picturePath }, {
+        new: true,
+        fields: ["picturePath"],
+        useFindAndModify: false
+    });
+    ctx.body = user;
 };
 
-exports.handleUser = async (ctx) => {
+exports.handleNewUser = async (ctx) => {
     console.log("create User");
     //todo maybe add current location
-    if (!ctx.request.body.userName) {
-        ctx.request.body.userName = "userName " + util.getRandom(100);
-        // ctx.request.body.phoneNumber = "phoneNumber " + util.getRandom(100000);
-    }
+    //todo do the contact to user mapping
+    // if (!ctx.request.body.userName) {
+    //     ctx.request.body.userName = "userName " + util.getRandom(100);
+    //     // ctx.request.body.phoneNumber = "phoneNumber " + util.getRandom(100000);
+    // }
 
     let user = null;
     if (ctx.session.userId) {
         user = await User.findById(ctx.session.userId);
     }
-    if (ctx.request.body.authId) {
-        user = await User.findOne({authId: ctx.request.body.authId});
+    if (!user && ctx.request.body.nodeAuthId) {
+        user = await User.findOne({ nodeAuthId: ctx.request.body.nodeAuthId });
     }
     if (!user) {
+        const contactIds =  await mapContactsToUsers(ctx.request.body.contacts);
+
         user = await User.create({
             userName: ctx.request.body.userName,
             picturePath: ctx.request.body.picturePath,
             phoneNumber: ctx.request.body.phoneNumber,
-            // contacts: ctx.request.body.contacts,
-            authId: ctx.request.body.authId || "dummyAuth",
+            contacts: contactIds,
+            nodeAuthId: ctx.request.body.nodeAuthId || "dummyAuth",
         });
     }
 
@@ -115,3 +125,36 @@ exports.handleUser = async (ctx) => {
         ctx.body = user;
     }
 };
+
+exports.updateUser = async (ctx) => {
+    console.log("update User");
+    const user = await User.findOneAndUpdate({ id: ctx.session.userId },
+        {
+            userName: ctx.request.body.userName,
+            phoneNumber: ctx.request.body.phoneNumber
+        }, {
+            new: true,
+            fields: ["userName", "phoneNumber"],
+            useFindAndModify: false
+        });
+
+    if (!user) {
+        ctx.throw(500, "Failed to update user");
+    } else {
+        ctx.body = user;
+    }
+};
+
+
+exports.updateUserContacts = async (ctx) => {
+
+    console.log("updateUserContacts HUAAAAA");
+    // console.log(ctx.request.body.contacts);
+    // const contactIds = mapContactsToUsers(ctx.request.body.contacts);
+    // await User.updateOne({ id: ctx.session.userId }, { contacts: contactIds });
+}
+
+
+const mapContactsToUsers = async (phoneNumbers) => {
+    return await User.find({ phoneNumber: { $in: phoneNumbers } }, "id");
+}
