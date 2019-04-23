@@ -1,1 +1,0 @@
-START "runas /user:administrator" cmd /K "cd C:\Program Files\MongoDB\Server\3.4\bin & mongo.exe "

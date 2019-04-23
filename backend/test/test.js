@@ -2,13 +2,10 @@ var assert = require('assert'),
     mongoose = require('mongoose'),
     chai = require('chai'),
     chaiHttp = require('chai-http'),
-    user = require('../controller/user'),
-    app = require("../app");
-
+    expect = chai.expect,
+    User = require('../models/User');
+app = require("../app");
 chai.use(chaiHttp);
-var request = chai.request(app);
-var expect = chai.expect;
-
 
 describe('Array', function () {
     describe('#indexOf()', function () {
@@ -20,51 +17,60 @@ describe('Array', function () {
 
 describe('User', function () {
     before(async () => {
-        const db = await mongoose
-            .connect('mongodb://localhost/test', {
-                useNewUrlParser: true
-            });
-        // .then((response) => {
-        //     console.log('mongo connection created')
-        // })
-        // .catch((err) => {
-        //     console.log("Error connecting to Mongo")
-        //     console.log(err);
-        // });
-    });
-
-    describe("createUser", function () {
-        it("should create a user with correct name", async (done) => {
-            request.post("/users").send({
-                'userName': 'The_Awesome_one',
-                "phoneNumber": "Some damn awesome number",
-                'picturePath': '/a/path/to/the/awesome/pic'
-            }).end(function (err, res) {
-                expect(err).to.be.null;
-                expect(res).to.have.status(200);
-                expect(res.body.userName).to.equal("The_Awesome_one");
-                expect(res.body.picturePath).to.equal("/a/path/to/the/awesome/pic");
-                expect(res.body.phoneNumber).to.equal("Some damn awesome number");
-                done();
-            });
+        await mongoose.connect('mongodb://localhost/test', {
+            useNewUrlParser: true
         });
     });
 
-    describe("updateUser", function () {
-        it("should update a user with correct name", async (done) => {
-            request.post("/users").send({
-                'userName': 'The_Awesome_one',
-                "phoneNumber": "Some damn awesome number",
-                'picturePath': '/a/path/to/the/awesome/pic'
-            }).end(function (err, res) {
-                expect(err).to.be.null;
-                expect(res).to.have.status(200);
-                expect(res.body.userName).to.equal("The_Awesome_one");
-                expect(res.body.picturePath).to.equal("/a/path/to/the/awesome/pic");
-                expect(res.body.phoneNumber).to.equal("Some damn awesome number");
-                done();
-            });
-        })
-    })
+    after(async () => {
+        await mongoose.connection.close();
+    });
 
+    afterEach(async () => {
+        await mongoose.model("User").collection.drop();
+    });
+
+    describe('create', () => {
+        it('should create a new user', async () => {
+
+            const res = await chai.request(app).post("/users").send({
+                userName: "myName",
+                phoneNumber: "awesome number"
+            });
+
+            expect(res).to.be.a('object');
+            expect(res.body).to.have.property('userName');
+            expect(res.body.userName).to.equal('myName');
+            expect(res.body.phoneNumber).to.equal('awesome number');
+        });
+    });
+
+    describe('update', () => {
+        it('should change phoneNumber and userName of user', async () => {
+
+            const user = await User.create({
+                userName: "oldName",
+                phoneNumber: "old number",
+                nodeAuthId: "dummyAuth"
+            });
+            //
+            // let cookie = Buffer.from(JSON.stringify({userId: user.id})).toString('base64'); // base64 converted value of cookie
+            //
+            // let kg = Keygrip(['Ungeheim']); // same key as I'm using in my app
+            // let hash = kg.sign('my-session=' + cookie);
+
+            const res = await chai.request(app).patch("/users")
+                // .set('cookie', "koa:sess=" + cookie + ";" + "koa:sess.sig=" + hash + ";")
+                .send({
+                    userName: "myNewName",
+                    phoneNumber: "new number",
+                });
+
+            expect(res).to.be.a('object');
+            expect(res.body).to.have.property('userName');
+            expect(res.body.userName).to.equal('myName');
+            expect(res.body.phoneNumber).to.equal('awesome number');
+
+        });
+    });
 });

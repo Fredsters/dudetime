@@ -78,7 +78,8 @@ class Profile extends React.Component {
             this.props.updateUser({
                 userName: this.state.userName,
                 phoneNumber: this.state.phoneNumber,
-                contacts: this.contacts
+                contacts: this.contacts,
+                idToken: this.idToken
             });
         } else {
             this.props.newUser({

@@ -1,7 +1,6 @@
 const User = require('../models/User');
 const util = require("../util/util");
 const auth = require('../util/auth');
-const { Storage } = require('@google-cloud/storage');
 const fs = require('fs');
 const path = require('path');
 
@@ -31,41 +30,41 @@ exports.getCurrentUser = async (ctx, next) => {
 };
 
 //deprecated ^^
-exports.uploadUserImage = async (ctx, next, projectId = "dudetime", bucketName = "fredster_182_dudetime") => {
-    const storage = new Storage({ projectId });
-    const bucket = storage.bucket(bucketName);
-
-    console.log("Wir sind im upload");
-    const uploadFile = ctx.request.body.avatar;
-    if (uploadFile) {
-        const gcsname = Date.now() + uploadFile.name;
-        const file = bucket.file(gcsname);
-
-        const stream = file.createWriteStream({
-            metadata: {
-                contentType: uploadFile.mimetype
-            },
-            resumable: false
-        }).on('error', function (err) {
-            console.log(err);
-        }).on('finish', async () => {
-            console.log("finish");
-        });
-
-        await uploadFile.pipe(stream);
-
-        ctx.request.body.avatar.cloudStoragePublicUrl = getPublicUrl(gcsname);
-        await next();
-        // ctx.body = {picturePath: ctx.request.body.avatar.cloudStoragePublicUrl};
-        // stream.end();
-        // await next();
-    }
-};
+// exports.uploadUserImage = async (ctx, next, projectId = "dudetime", bucketName = "fredster_182_dudetime") => {
+//     const storage = new Storage({ projectId });
+//     const bucket = storage.bucket(bucketName);
+//
+//     console.log("Wir sind im upload");
+//     const uploadFile = ctx.request.body.avatar;
+//     if (uploadFile) {
+//         const gcsname = Date.now() + uploadFile.name;
+//         const file = bucket.file(gcsname);
+//
+//         const stream = file.createWriteStream({
+//             metadata: {
+//                 contentType: uploadFile.mimetype
+//             },
+//             resumable: false
+//         }).on('error', function (err) {
+//             console.log(err);
+//         }).on('finish', async () => {
+//             console.log("finish");
+//         });
+//
+//         await uploadFile.pipe(stream);
+//
+//         ctx.request.body.avatar.cloudStoragePublicUrl = getPublicUrl(gcsname);
+//         await next();
+//         // ctx.body = {picturePath: ctx.request.body.avatar.cloudStoragePublicUrl};
+//         // stream.end();
+//         // await next();
+//     }
+// };
 
 //deprecated
-function getPublicUrl(filename) {
-    return `https://storage.googleapis.com/fredster_182_dudetime/${filename}`;
-}
+// function getPublicUrl(filename) {
+//     return `https://storage.googleapis.com/fredster_182_dudetime/${filename}`;
+// }
 
 exports.geUsers = async (ctx, next) => {
     //todo only query needed fields
@@ -83,7 +82,7 @@ exports.geUsers = async (ctx, next) => {
 
 exports.updateUserPicture = async (ctx) => {
     console.log("update UserPicture");
-    const user = await User.findOneAndUpdate({ id: ctx.session.userId }, { picturePath: ctx.request.body.picturePath }, {
+    const user = await User.findOneAndUpdate({id: ctx.session.userId}, {picturePath: ctx.request.body.picturePath}, {
         new: true,
         fields: ["picturePath"],
         useFindAndModify: false
@@ -105,17 +104,17 @@ exports.handleNewUser = async (ctx) => {
         user = await User.findById(ctx.session.userId);
     }
     if (!user && ctx.request.body.nodeAuthId) {
-        user = await User.findOne({ nodeAuthId: ctx.request.body.nodeAuthId });
+        user = await User.findOne({nodeAuthId: ctx.request.body.nodeAuthId});
     }
     if (!user) {
-        const contactIds =  await mapContactsToUsers(ctx.request.body.contacts);
+        const contactIds = await mapContactsToUsers(ctx.request.body.contacts);
 
         user = await User.create({
             userName: ctx.request.body.userName,
             picturePath: ctx.request.body.picturePath,
             phoneNumber: ctx.request.body.phoneNumber,
             contacts: contactIds,
-            nodeAuthId: ctx.request.body.nodeAuthId || "dummyAuth",
+            nodeAuthId: ctx.request.body.nodeAuthId,
         });
     }
 
@@ -128,7 +127,7 @@ exports.handleNewUser = async (ctx) => {
 
 exports.updateUser = async (ctx) => {
     console.log("update User");
-    const user = await User.findOneAndUpdate({ id: ctx.session.userId },
+    const user = await User.findOneAndUpdate({id: ctx.session.userId},
         {
             userName: ctx.request.body.userName,
             phoneNumber: ctx.request.body.phoneNumber
@@ -152,9 +151,9 @@ exports.updateUserContacts = async (ctx) => {
     // console.log(ctx.request.body.contacts);
     // const contactIds = mapContactsToUsers(ctx.request.body.contacts);
     // await User.updateOne({ id: ctx.session.userId }, { contacts: contactIds });
-}
+};
 
 
 const mapContactsToUsers = async (phoneNumbers) => {
-    return await User.find({ phoneNumber: { $in: phoneNumbers } }, "id");
-}
+    return await User.find({phoneNumber: {$in: phoneNumbers}}, "id");
+};

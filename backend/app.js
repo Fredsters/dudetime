@@ -45,23 +45,23 @@ app.use(koaBody);
 
 //router.use(Multy()); was used for image piping
 
-// app.use(async (ctx, next) => {
-//     //todo store session cookie in db ?
-//     //todo check how to handle expired session
-//     const token = ctx.request.body.idToken;
-//     if (ctx.session.userId || token) {
-//         if (token) {
-//             const nodeAuthId = await auth.verify(token);
-//             ctx.request.body.nodeAuthId = nodeAuthId;
-//         }
-//         await next();
-//         if (token) {
-//             ctx.session.userId = ctx.body.id;
-//         }
-//     } else {
-//         ctx.throw(401, 'No valid session');
-//     }
-// });
+app.use(async (ctx, next) => {
+    //todo store session cookie in db ?
+    //todo check how to handle expired session
+    const token = ctx.request.body.idToken;
+    if (ctx.session.userId || token) {
+        if (token) {
+            const nodeAuthId = await auth.verify(token);
+            ctx.request.body.nodeAuthId = nodeAuthId;
+        }
+        await next();
+        if (token) {
+            ctx.session.userId = ctx.body.id;
+        }
+    } else {
+        ctx.throw(401, 'No valid session');
+    }
+});
 
 router
     .get('/contacts/:id', user.getUserContacts)
@@ -80,7 +80,7 @@ app
     .use(router.routes())
     .use(router.allowedMethods());
 
-var server = app.listen(3000);
+const server = app.listen(3000);
 console.log("Listening on port 3000");
 
 module.exports = server;
