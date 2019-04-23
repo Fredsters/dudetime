@@ -2,12 +2,7 @@ import * as firebase from 'firebase';
 import uuid from 'react-native-uuid';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAMonoHCuNY3PltFsrQohFMXF0SWcVryqs",
-    authDomain: "dudetime.firebaseapp.com",
-    databaseURL: "https://dudetime.firebaseio.com",
-    projectId: "dudetime",
-    storageBucket: "dudetime_182",
-    messagingSenderId: "216116664350"
+
 
 };
 
