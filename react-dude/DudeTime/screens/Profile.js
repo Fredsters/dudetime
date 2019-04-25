@@ -183,6 +183,7 @@ class Profile extends React.Component {
                         <Button title="logout"
                             onPress={this.logout}>
                         </Button>
+
                     </View>
                 </View>
             </ScrollView>

@@ -3,8 +3,11 @@ var assert = require('assert'),
     chai = require('chai'),
     chaiHttp = require('chai-http'),
     expect = chai.expect,
+    sinon = require("sinon"),
+    auth = require("../util/auth"),
     User = require('../models/User');
-app = require("../app");
+let app = null;
+let userSessionId = null;
 chai.use(chaiHttp);
 
 describe('Array', function () {
@@ -20,6 +23,15 @@ describe('User', function () {
         await mongoose.connect('mongodb://localhost/test', {
             useNewUrlParser: true
         });
+
+
+        sinon.stub(auth, 'authenticate')
+            .callsFake((ctx, next) => {
+                ctx.session = {userId: userSessionId};
+                return next();
+            });
+
+        app = require("../app");
     });
 
     after(async () => {
@@ -35,7 +47,8 @@ describe('User', function () {
 
             const res = await chai.request(app).post("/users").send({
                 userName: "myName",
-                phoneNumber: "awesome number"
+                phoneNumber: "awesome number",
+                nodeAuthId: "dummy"
             });
 
             expect(res).to.be.a('object');
@@ -58,12 +71,11 @@ describe('User', function () {
             //
             // let kg = Keygrip(['Ungeheim']); // same key as I'm using in my app
             // let hash = kg.sign('my-session=' + cookie);
-
+            userSessionId = user.id;
             const res = await chai.request(app).patch("/users")
-                // .set('cookie', "koa:sess=" + cookie + ";" + "koa:sess.sig=" + hash + ";")
                 .send({
                     userName: "myNewName",
-                    phoneNumber: "new number",
+                    phoneNumber: "new number"
                 });
 
             expect(res).to.be.a('object');

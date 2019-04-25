@@ -31,7 +31,7 @@ export default function mateReducer(state = initialState, action) {
             return {
                 ...state,
                 user: {
-                    ...user,
+                    ...state.user,
                     phoneNumber: action.user.phoneNumber,
                     userName: action.user.userName
                 }
@@ -40,7 +40,7 @@ export default function mateReducer(state = initialState, action) {
             return {
                 ...state,
                 user: {
-                    ...user,
+                    ...state.user,
                     picturePath: action.picturePath
                 }
             };

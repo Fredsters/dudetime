@@ -13,16 +13,22 @@ const styles = StyleSheet.create({
 });
 
 const TagList = ({tags}) => {
-    return (
-        <View style={style.row}>
-            {tags.map((item, key) => {
-                    return (
-                        <Text style={styles.tag} key={key}>{item}</Text>
-                    )
-
-                }
-            )}
-        </View>
-    );
+    if (tags) {
+        return (
+            <View style={style.row}>
+                {tags.map((item, key) => {
+                        return (
+                            <Text style={styles.tag} key={key}>{item}</Text>
+                        )
+                    }
+                )}
+            </View>
+        );
+    } else {
+        return (
+            <View style={style.row}>
+            </View>
+        );
+    }
 };
 export default TagList;

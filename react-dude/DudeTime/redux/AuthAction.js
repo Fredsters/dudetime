@@ -30,7 +30,7 @@ export function updateProfilePicture(picturePath) {
         dispatch(userBegin());
         return serverFetch(`${root}/users/profilePicture`, 'PATCH', picturePath)
             .then(json => {
-                dispatch(updateUserImageSuccess(json));
+                dispatch(updateUserImageSuccess(json.picturePath));
                 return json;
             })
             .catch(error => dispatch(userFailure(error)));

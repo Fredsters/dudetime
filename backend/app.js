@@ -45,23 +45,7 @@ app.use(koaBody);
 
 //router.use(Multy()); was used for image piping
 
-app.use(async (ctx, next) => {
-    //todo store session cookie in db ?
-    //todo check how to handle expired session
-    const token = ctx.request.body.idToken;
-    if (ctx.session.userId || token) {
-        if (token) {
-            const nodeAuthId = await auth.verify(token);
-            ctx.request.body.nodeAuthId = nodeAuthId;
-        }
-        await next();
-        if (token) {
-            ctx.session.userId = ctx.body.id;
-        }
-    } else {
-        ctx.throw(401, 'No valid session');
-    }
-});
+app.use(auth.authenticate);
 
 router
     .get('/contacts/:id', user.getUserContacts)

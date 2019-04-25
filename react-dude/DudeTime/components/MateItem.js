@@ -22,7 +22,7 @@ class MateItem extends React.Component {
             <View style={styles.mateItem}>
                 <View style={styles.header}>
                     <DudePic size={70}
-                             source={source}
+                             source={{uri: mate.owner.picturePath}}
                     />
                     <Text style={styles.title}>{mate.title}</Text>
                 </View>

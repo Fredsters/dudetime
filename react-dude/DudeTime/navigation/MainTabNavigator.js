@@ -4,7 +4,7 @@ import {createBottomTabNavigator, createStackNavigator} from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
+import CreateMate from '../screens/CreateMate';
 import SettingsScreen from '../screens/SettingsScreen';
 import MateList from '../screens/MateList';
 import Profile from '../screens/Profile';
@@ -27,12 +27,12 @@ HomeStack.navigationOptions = {
     ),
 };
 
-const LinksStack = createStackNavigator({
-    Links: LinksScreen,
+const CreateMateStack = createStackNavigator({
+    CreateMates: CreateMate,
 });
 
-LinksStack.navigationOptions = {
-    tabBarLabel: 'Links',
+CreateMateStack.navigationOptions = {
+    tabBarLabel: 'Create Mates',
     tabBarIcon: ({focused}) => (
         <TabBarIcon
             focused={focused}
@@ -88,6 +88,6 @@ export default createBottomTabNavigator({
     MateStack,
     ProfileStack,
     HomeStack,
-    LinksStack,
+    CreateMateStack,
     SettingsStack,
 });

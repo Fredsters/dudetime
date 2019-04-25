@@ -21,12 +21,14 @@ exports.getCurrentUser = async (ctx, next) => {
     //todo only query needed fields
     //ctx.params named route parameters
     //ctx.request.query ?
-    const user = await User.findById(ctx.session.userId, 'userName');
+    const user = await User.findById(ctx.session.userId);
     if (!user) {
         ctx.throw(500, "There was an error retrieving your contacts.");
     } else {
         ctx.body = user
     }
+
+    return user;
 };
 
 //deprecated ^^
@@ -82,7 +84,7 @@ exports.geUsers = async (ctx, next) => {
 
 exports.updateUserPicture = async (ctx) => {
     console.log("update UserPicture");
-    const user = await User.findOneAndUpdate({id: ctx.session.userId}, {picturePath: ctx.request.body.picturePath}, {
+    const user = await User.findOneAndUpdate({_id: ctx.session.userId}, {picturePath: ctx.request.body.picturePath}, {
         new: true,
         fields: ["picturePath"],
         useFindAndModify: false
@@ -127,7 +129,8 @@ exports.handleNewUser = async (ctx) => {
 
 exports.updateUser = async (ctx) => {
     console.log("update User");
-    const user = await User.findOneAndUpdate({id: ctx.session.userId},
+    const users = await User.find({});
+    const user = await User.findOneAndUpdate({_id: ctx.session.userId},
         {
             userName: ctx.request.body.userName,
             phoneNumber: ctx.request.body.phoneNumber
@@ -155,5 +158,6 @@ exports.updateUserContacts = async (ctx) => {
 
 
 const mapContactsToUsers = async (phoneNumbers) => {
-    return await User.find({phoneNumber: {$in: phoneNumbers}}, "id");
+    //todo use country code to replace 0 with +49 etc
+    return await User.find({phoneNumber: {$in: phoneNumbers.map(entry => entry.number)}}, "id");
 };

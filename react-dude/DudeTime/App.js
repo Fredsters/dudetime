@@ -1,15 +1,15 @@
 import React from 'react';
-import { AsyncStorage, Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { AppLoading, Asset, Font, Icon } from 'expo';
+import {AsyncStorage, Platform, StatusBar, StyleSheet, View, Button} from 'react-native';
+import {AppLoading, Asset, Font, Icon} from 'expo';
 import AppNavigator from './navigation/AppNavigator';
-import { Provider } from 'react-redux'
-import { PersistGate } from 'redux-persist/lib/integration/react';
-import { applyMiddleware, createStore } from "redux";
+import {Provider} from 'react-redux'
+import {PersistGate} from 'redux-persist/lib/integration/react';
+import {applyMiddleware, createStore} from "redux";
 import thunk from "redux-thunk";
-import { persistReducer, persistStore } from 'redux-persist';
+import {persistReducer, persistStore} from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
-import rootReducer from './redux/RootReducer'; // the value from combineReducers
+import rootReducer from './redux/RootReducer';
 
 
 const persistConfig = {
@@ -47,17 +47,24 @@ export default class App extends React.Component {
                 <Provider store={store}>
                     <PersistGate persistor={persistor}>
                         <View style={styles.container}>
-                            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+                            {Platform.OS === 'ios' && <StatusBar barStyle="default"/>}
+                            <Button title="purge persist store"
+                                    onPress={this.purgePersistor}>
+                            </Button>
                             <AppNavigator
                                 screenProps={{
-                                    mateList: { "hello": "some data" }
-                                }} />
+                                    mateList: {"hello": "some data"}
+                                }}/>
                         </View>
                     </PersistGate>
                 </Provider>
             );
         }
     }
+
+    purgePersistor = async () => {
+        persistor.purge();
+    };
 
     _loadResourcesAsync = async () => {
         return Promise.all([
@@ -82,7 +89,7 @@ export default class App extends React.Component {
     };
 
     _handleFinishLoading = () => {
-        this.setState({ isLoadingComplete: true });
+        this.setState({isLoadingComplete: true});
     };
 }
 
