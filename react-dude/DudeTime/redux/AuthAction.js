@@ -37,11 +37,25 @@ export function updateProfilePicture(picturePath) {
     };
 }
 
+export function fetchUsers () {
+    return async (dispatch) => {
+        dispatch(userBegin());
+        return serverFetch(`${root}/users`, 'GET')
+            .then(json => {
+                dispatch(fetchUsersSuccess(json));
+                return json;
+            })
+            .catch(error => dispatch(userFailure(error)));
+    };
+}
+
 export const USER_BEGIN = 'USER_BEGIN';
 export const USER_FAILURE = 'USER_FAILURE';
 export const NEW_USER_SUCCESS = 'NEW_USER_SUCCESS';
 export const UPDATE_USER_SUCCESS = 'UPDATE_USER_SUCCESS';
 export const UPDATE_USER_IMAGE_SUCCESS = 'UPDATE_USER_IMAGE_SUCCESS';
+export const STORE_AUTH_INFO = 'STORE_AUTH_INFO';
+export const FETCH_USER_SUCCESS = 'FETCH_USER_SUCCESS';
 
 
 export const userBegin = () => ({
@@ -62,4 +76,12 @@ export const updateUserSuccess = user => ({
 
 export const updateUserImageSuccess = picturePath => ({
     type: UPDATE_USER_IMAGE_SUCCESS, picturePath
+});
+
+export const storeAuthInfo = authInfo => ({
+    type: STORE_AUTH_INFO, authInfo
+});
+
+export const fetchUsersSuccess = users => ({
+    type: FETCH_USER_SUCCESS, users
 });

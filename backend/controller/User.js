@@ -16,6 +16,14 @@ exports.getUserContacts = async (ctx, next) => {
     }
 };
 
+exports.getUsers = async (ctx) => {
+    const users = await User.find({});
+    if (!users || users.length === 0) {
+        ctx.throw(500, "There was an error retrieving the users.");
+    } else {
+        ctx.body = users
+    }
+};
 
 exports.getCurrentUser = async (ctx, next) => {
     //todo only query needed fields
@@ -84,6 +92,7 @@ exports.geUsers = async (ctx, next) => {
 
 exports.updateUserPicture = async (ctx) => {
     console.log("update UserPicture");
+    //todo throw error when unsuccessful
     const user = await User.findOneAndUpdate({_id: ctx.session.userId}, {picturePath: ctx.request.body.picturePath}, {
         new: true,
         fields: ["picturePath"],

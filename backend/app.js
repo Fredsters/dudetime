@@ -49,7 +49,7 @@ app.use(auth.authenticate);
 
 router
     .get('/contacts/:id', user.getUserContacts)
-    // .get('/users', user.getUsers)
+    .get('/users', user.getUsers)
     .get("/currentUser", user.getCurrentUser)
     .patch('/users/contacts', user.updateUserContacts)
     .post('/users', user.handleNewUser)
