@@ -5,7 +5,9 @@ import {
     UPDATE_USER_IMAGE_SUCCESS,
     UPDATE_USER_SUCCESS,
     USER_BEGIN,
-    USER_FAILURE
+    USER_FAILURE,
+    CLEAR_USER,
+    UPDATE_USER_CONTACTS
 } from './AuthAction';
 
 const initialState = {
@@ -24,6 +26,7 @@ export default function mateReducer(state = initialState, action) {
             return {
                 ...state,
                 user: {
+                    ...state.user,
                     id: action.user._id,
                     phoneNumber: action.user.phoneNumber,
                     userName: action.user.userName,
@@ -59,15 +62,29 @@ export default function mateReducer(state = initialState, action) {
                 user: {
                     ...state.user,
                     accessToken: action.authInfo.accessToken,
-                    idToken: action.authInfo.idToken
+                    idToken: action.authInfo.idToken,
+                    authId: action.authInfo.authId
                 }
             };
         case FETCH_USER_SUCCESS:
             return {
                 ...state,
                 user: {
+                    ...state.user
+                    // userContacts: action.users
+                }
+            };
+        case CLEAR_USER:
+            return {
+                ...state,
+                user: null
+            };
+        case UPDATE_USER_CONTACTS:
+            return {
+                ...state,
+                user: {
                     ...state.user,
-                    userContacts: action.users
+                    userContacts: action.userContacts,
                 }
             };
         default:

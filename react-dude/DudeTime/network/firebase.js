@@ -1,6 +1,6 @@
 import * as firebase from 'firebase';
 import uuid from 'react-native-uuid';
-import {firebaseConfig} from "../constants/network";
+import { firebaseConfig } from "../constants/network";
 
 firebase.initializeApp(firebaseConfig);
 

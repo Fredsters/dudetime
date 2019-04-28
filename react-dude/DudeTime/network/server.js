@@ -5,7 +5,7 @@ export function serverFetch(path, method, body) {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        credentials: 'same-origin'
+        credentials: 'include'
     }
     if (body && method !== "GET") {
         options.body = JSON.stringify(body);
@@ -13,7 +13,12 @@ export function serverFetch(path, method, body) {
 
     return fetch(path, options)
         .then(handleErrors)
-        .then(res => res.json());
+        .then(res => {
+            //todo put this in async storage??
+            console.log(res.headers.get('set-cookie'));
+            return res.json()
+        }
+        );
 }
 
 // Handle HTTP errors since fetch won't.

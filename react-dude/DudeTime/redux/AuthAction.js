@@ -37,12 +37,24 @@ export function updateProfilePicture(picturePath) {
     };
 }
 
-export function fetchUsers () {
+export function fetchUsers() {
     return async (dispatch) => {
         dispatch(userBegin());
         return serverFetch(`${root}/users`, 'GET')
             .then(json => {
                 dispatch(fetchUsersSuccess(json));
+                return json;
+            })
+            .catch(error => dispatch(userFailure(error)));
+    };
+}
+
+export function updateUserContacts(contacts) {
+    return async (dispatch) => {
+        dispatch(userBegin());
+        return serverFetch(`${root}/users/contacts`, 'PATCH', contacts)
+            .then(json => {
+                dispatch(updateContacts(json));
                 return json;
             })
             .catch(error => dispatch(userFailure(error)));
@@ -56,6 +68,8 @@ export const UPDATE_USER_SUCCESS = 'UPDATE_USER_SUCCESS';
 export const UPDATE_USER_IMAGE_SUCCESS = 'UPDATE_USER_IMAGE_SUCCESS';
 export const STORE_AUTH_INFO = 'STORE_AUTH_INFO';
 export const FETCH_USER_SUCCESS = 'FETCH_USER_SUCCESS';
+export const CLEAR_USER = 'CLEAR_USER';
+export const UPDATE_USER_CONTACTS = 'UPDATE_USER_CONTACTS';
 
 
 export const userBegin = () => ({
@@ -85,3 +99,12 @@ export const storeAuthInfo = authInfo => ({
 export const fetchUsersSuccess = users => ({
     type: FETCH_USER_SUCCESS, users
 });
+
+export const clearUser = () => ({
+    type: CLEAR_USER
+});
+
+export const updateContacts = (contacts) => ({
+    type: UPDATE_USER_CONTACTS, contacts
+});
+

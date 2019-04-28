@@ -161,8 +161,9 @@ exports.updateUserContacts = async (ctx) => {
 
     console.log("updateUserContacts HUAAAAA");
     // console.log(ctx.request.body.contacts);
-    // const contactIds = mapContactsToUsers(ctx.request.body.contacts);
-    // await User.updateOne({ id: ctx.session.userId }, { contacts: contactIds });
+    const contactIds = await mapContactsToUsers(ctx.request.body.contacts);
+    console.log(contactIds);
+    await User.updateOne({ id: ctx.session.userId }, { contacts: contactIds });
 };
 
 

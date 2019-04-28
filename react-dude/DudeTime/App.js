@@ -1,16 +1,21 @@
+
 import React from 'react';
-import {AsyncStorage, Platform, StatusBar, StyleSheet, View, Button} from 'react-native';
-import {AppLoading, Asset, Font, Icon} from 'expo';
+import { AsyncStorage, Platform, StatusBar, StyleSheet, View, Button } from 'react-native';
+import { AppLoading, Asset, Font, Icon, Expo } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
-import {Provider} from 'react-redux'
-import {PersistGate} from 'redux-persist/lib/integration/react';
-import {applyMiddleware, createStore} from "redux";
+import { Provider } from 'react-redux'
+import { PersistGate } from 'redux-persist/lib/integration/react';
+import { applyMiddleware, createStore } from "redux";
 import thunk from "redux-thunk";
-import {persistReducer, persistStore} from 'redux-persist';
+import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import rootReducer from './redux/RootReducer';
+import Reactotron from 'reactotron-react-native'
 
+
+Reactotron.configure({lan: 'exp://192.168.0.241:19000'})
+    .useReactNative()
 
 const persistConfig = {
     key: 'root',
@@ -28,11 +33,16 @@ const persistor = persistStore(store);
 
 export default class App extends React.Component {
 
+    componentDidMount() {
+        Reactotron.connect()
+    }
+
     state = {
         isLoadingComplete: false,
     };
 
     render() {
+        Reactotron.log('hello from AppContainer');
         if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
             return (
                 <AppLoading
@@ -47,14 +57,14 @@ export default class App extends React.Component {
                 <Provider store={store}>
                     <PersistGate persistor={persistor}>
                         <View style={styles.container}>
-                            {Platform.OS === 'ios' && <StatusBar barStyle="default"/>}
+                            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
                             <Button title="purge persist store"
-                                    onPress={this.purgePersistor}>
+                                onPress={this.purgePersistor}>
                             </Button>
                             <AppNavigator
                                 screenProps={{
-                                    mateList: {"hello": "some data"}
-                                }}/>
+                                    mateList: { "hello": "some data" }
+                                }} />
                         </View>
                     </PersistGate>
                 </Provider>
@@ -89,7 +99,7 @@ export default class App extends React.Component {
     };
 
     _handleFinishLoading = () => {
-        this.setState({isLoadingComplete: true});
+        this.setState({ isLoadingComplete: true });
     };
 }
 
