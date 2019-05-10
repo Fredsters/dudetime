@@ -2,6 +2,7 @@ const Koa = require('koa'),
     app = new Koa(),
     router = require('koa-router')(),
     user = require('./controller/user'),
+    userGen = require('./util/UserGen'),
     mate = require('./controller/mate'),
     db = require('./database').db,
     koaBody = require('koa-body')({}),
@@ -65,6 +66,7 @@ app
     .use(router.allowedMethods());
 
 const server = app.listen(3000);
+userGen.generateUsers();
 console.log("Listening on port 3000");
 
 module.exports = server;

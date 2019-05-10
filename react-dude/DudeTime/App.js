@@ -14,8 +14,8 @@ import rootReducer from './redux/RootReducer';
 import Reactotron from 'reactotron-react-native'
 
 
-Reactotron.configure({lan: 'exp://192.168.0.241:19000'})
-    .useReactNative()
+Reactotron.configure({host: '10.18.37.35'})
+    .useReactNative();
 
 const persistConfig = {
     key: 'root',

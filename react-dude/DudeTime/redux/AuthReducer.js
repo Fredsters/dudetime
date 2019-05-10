@@ -1,13 +1,13 @@
 import {
+    CLEAR_USER,
     FETCH_USER_SUCCESS,
     NEW_USER_SUCCESS,
     STORE_AUTH_INFO,
+    UPDATE_USER_CONTACTS,
     UPDATE_USER_IMAGE_SUCCESS,
     UPDATE_USER_SUCCESS,
     USER_BEGIN,
-    USER_FAILURE,
-    CLEAR_USER,
-    UPDATE_USER_CONTACTS
+    USER_FAILURE
 } from './AuthAction';
 
 const initialState = {
@@ -84,7 +84,7 @@ export default function mateReducer(state = initialState, action) {
                 ...state,
                 user: {
                     ...state.user,
-                    userContacts: action.userContacts,
+                    userContacts: action.user.contacts,
                 }
             };
         default:

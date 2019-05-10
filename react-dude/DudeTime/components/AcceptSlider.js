@@ -16,6 +16,7 @@ const thumbTopOffset = 0;
 class AcceptSlider extends React.Component {
 
     componentWillMount = () => {
+
         this._animatedValueX = thumbStart;
         this.state.pan.x.addListener((value) => this._animatedValueX = value.value);
 

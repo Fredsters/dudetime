@@ -3,6 +3,7 @@ const util = require("../util/util");
 const auth = require('../util/auth');
 const fs = require('fs');
 const path = require('path');
+const consts = require("../util/consts");
 
 exports.getUserContacts = async (ctx, next) => {
     //todo only query needed fields
@@ -158,16 +159,20 @@ exports.updateUser = async (ctx) => {
 
 
 exports.updateUserContacts = async (ctx) => {
-
-    console.log("updateUserContacts HUAAAAA");
-    // console.log(ctx.request.body.contacts);
     const contactIds = await mapContactsToUsers(ctx.request.body.contacts);
-    console.log(contactIds);
-    await User.updateOne({ id: ctx.session.userId }, { contacts: contactIds });
+    const user = await User.findOneAndUpdate({_id: ctx.session.userId}, {contacts: contactIds}, {
+        fields: ["contacts"]
+    }).populate('contacts').exec();
+    ctx.body = user;
 };
 
 
 const mapContactsToUsers = async (phoneNumbers) => {
-    //todo use country code to replace 0 with +49 etc
+    phoneNumbers.forEach((entry) => {
+        entry.number = entry.number.replace(/^0/, "+" + consts.country_codes[entry.countryCode.toUpperCase()])
+    });
+
     return await User.find({phoneNumber: {$in: phoneNumbers.map(entry => entry.number)}}, "id");
 };
+
+

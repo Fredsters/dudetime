@@ -104,7 +104,7 @@ export const clearUser = () => ({
     type: CLEAR_USER
 });
 
-export const updateContacts = (contacts) => ({
-    type: UPDATE_USER_CONTACTS, contacts
+export const updateContacts = (user) => ({
+    type: UPDATE_USER_CONTACTS, user
 });
 

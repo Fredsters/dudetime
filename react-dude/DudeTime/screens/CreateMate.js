@@ -18,7 +18,7 @@ class CreateMate extends React.Component {
     }
 
     async componentDidMount() {
-        await this.props.fetchUsers();
+        // await this.props.fetchUsers();
 
         this.setState({
             userContacts: this.props.auth.user.userContacts
