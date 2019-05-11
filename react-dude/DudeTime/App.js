@@ -13,8 +13,7 @@ import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import rootReducer from './redux/RootReducer';
 import Reactotron from 'reactotron-react-native'
 
-
-Reactotron.configure({host: '10.18.37.35'})
+Reactotron.configure({ host: '192.168.0.241' })
     .useReactNative();
 
 const persistConfig = {
