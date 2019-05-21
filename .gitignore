@@ -4,7 +4,5 @@ node_modules/
 data/
 .expo/
 images/
-react-dude/DudeTime/constants/
-.env
-
 react-dude/DudeTime/constants/network.js
+.env
