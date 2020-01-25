@@ -49,9 +49,9 @@ app.use(koaBody);
 app.use(auth.authenticate);
 
 router
-    .get('/contacts/:id', user.getUserContacts)
     .get('/users', user.getUsers)
     .get("/currentUser", user.getCurrentUser)
+    .get('/users/contacts', user.getUserContacts)
     .patch('/users/contacts', user.updateUserContacts)
     .post('/users', user.handleNewUser)
     .patch('/users', user.updateUser)

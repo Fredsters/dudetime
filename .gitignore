@@ -6,3 +6,4 @@ data/
 images/
 react-dude/DudeTime/constants/network.js
 .env
+backend/util/UserGen.js

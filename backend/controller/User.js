@@ -5,11 +5,9 @@ const fs = require('fs');
 const path = require('path');
 const consts = require("../util/consts");
 
-exports.getUserContacts = async (ctx, next) => {
-    //todo only query needed fields
-    //ctx.params named route parameters
-    //ctx.request.query ?
-    const users = await User.findById(ctx.params.id, 'contacts');
+exports.getUserContacts = async (ctx) => {
+    console.log("getUserContacts: " + ctx.session.userId);
+    const users = await User.findById(ctx.session.userId, 'contacts').populate('contacts').exec();;
     if (!users || users.length === 0) {
         ctx.throw(500, "There was an error retrieving your contacts.");
     } else {
