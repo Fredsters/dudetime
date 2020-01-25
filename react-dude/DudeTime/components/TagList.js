@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import style from '../Style';
+import {globalStyleSheet} from '../Style';
 import Colors from "../constants/Colors";
 
 const styles = StyleSheet.create({
@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
 const TagList = ({tags}) => {
     if (tags) {
         return (
-            <View style={style.row}>
+            <View style={globalStyleSheet.row}>
                 {tags.map((item, key) => {
                         return (
                             <Text style={styles.tag} key={key}>{item}</Text>
@@ -26,7 +26,7 @@ const TagList = ({tags}) => {
         );
     } else {
         return (
-            <View style={style.row}>
+            <View style={globalStyleSheet.row}>
             </View>
         );
     }

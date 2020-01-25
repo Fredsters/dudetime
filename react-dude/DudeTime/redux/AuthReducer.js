@@ -3,7 +3,7 @@ import {
     FETCH_USER_SUCCESS,
     NEW_USER_SUCCESS,
     STORE_AUTH_INFO,
-    UPDATE_USER_CONTACTS,
+    USER_CONTACTS,
     UPDATE_USER_IMAGE_SUCCESS,
     UPDATE_USER_SUCCESS,
     USER_BEGIN,
@@ -79,7 +79,7 @@ export default function mateReducer(state = initialState, action) {
                 ...state,
                 user: null
             };
-        case UPDATE_USER_CONTACTS:
+        case USER_CONTACTS:
             return {
                 ...state,
                 user: {

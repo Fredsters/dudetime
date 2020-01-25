@@ -1,24 +1,25 @@
 
 import React from 'react';
-import { AsyncStorage, Platform, StatusBar, StyleSheet, View, Button } from 'react-native';
-import { AppLoading, Asset, Font, Icon, Expo } from 'expo';
+import { AsyncStorage, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { AppLoading } from 'expo';
+import * as Font from 'expo-font';
+import { Asset } from 'expo-asset';
+import { Ionicons } from '@expo/vector-icons';
 import AppNavigator from './navigation/AppNavigator';
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/lib/integration/react';
 import { applyMiddleware, createStore } from "redux";
 import thunk from "redux-thunk";
 import { persistReducer, persistStore } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import rootReducer from './redux/RootReducer';
-import Reactotron from 'reactotron-react-native'
-
+/*
 Reactotron.configure({ host: '192.168.0.241' })
-    .useReactNative();
+    .useReactNative();*/
 
 const persistConfig = {
     key: 'root',
-    storage: storage,
+    storage: AsyncStorage,
     stateReconciler: autoMergeLevel2 // see "Merge Process" section for details.
 };
 
@@ -33,7 +34,7 @@ const persistor = persistStore(store);
 export default class App extends React.Component {
 
     componentDidMount() {
-        Reactotron.connect()
+        //Reactotron.connect()
     }
 
     state = {
@@ -41,7 +42,7 @@ export default class App extends React.Component {
     };
 
     render() {
-        Reactotron.log('hello from AppContainer');
+       // Reactotron.log('hello from AppContainer');
         if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
             return (
                 <AppLoading
@@ -57,12 +58,10 @@ export default class App extends React.Component {
                     <PersistGate persistor={persistor}>
                         <View style={styles.container}>
                             {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-                            <Button title="purge persist store"
-                                onPress={this.purgePersistor}>
-                            </Button>
                             <AppNavigator
                                 screenProps={{
-                                    mateList: { "hello": "some data" }
+                                    mateList: { "hello": "some data" },
+                                    persistor: persistor
                                 }} />
                         </View>
                     </PersistGate>
@@ -71,19 +70,16 @@ export default class App extends React.Component {
         }
     }
 
-    purgePersistor = async () => {
-        persistor.purge();
-    };
-
     _loadResourcesAsync = async () => {
         return Promise.all([
             Asset.loadAsync([
                 require('./assets/images/robot-dev.png'),
                 require('./assets/images/robot-prod.png'),
             ]),
+
             Font.loadAsync({
                 // This is the font that we are using for our tab bar
-                ...Icon.Ionicons.font,
+                ...Ionicons.font,
                 // We include SpaceMono because we use it in HomeScreen.js. Feel free
                 // to remove this if you are not using it in your app
                 'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),

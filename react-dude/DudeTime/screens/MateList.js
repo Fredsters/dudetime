@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, Text, View, Button } from 'react-native';
 import { fetchMates } from "../redux/MateActions";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
+import Colors from "../constants/Colors";
 import MateItem from '../components/MateItem';
 
 // import MateItem from "../components/MateItem";
@@ -61,8 +62,7 @@ function mapDispatchToProps(dispatch) {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: '#fff',
+        flex: 1
     }
 });
 

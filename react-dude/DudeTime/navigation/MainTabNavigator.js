@@ -1,31 +1,12 @@
 import React from 'react';
-import {Platform} from 'react-native';
-import {createBottomTabNavigator, createStackNavigator} from 'react-navigation';
+import { Platform } from 'react-native';
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
+import {createStackNavigator} from "react-navigation-stack"
 
 import TabBarIcon from '../components/TabBarIcon';
-import HomeScreen from '../screens/HomeScreen';
 import CreateMate from '../screens/CreateMate';
-import SettingsScreen from '../screens/SettingsScreen';
 import MateList from '../screens/MateList';
 import Profile from '../screens/Profile';
-
-const HomeStack = createStackNavigator({
-    Home: HomeScreen,
-});
-
-HomeStack.navigationOptions = {
-    tabBarLabel: 'Home',
-    tabBarIcon: ({focused}) => (
-        <TabBarIcon
-            focused={focused}
-            name={
-                Platform.OS === 'ios'
-                    ? `ios-information-circle${focused ? '' : '-outline'}`
-                    : 'md-information-circle'
-            }
-        />
-    ),
-};
 
 const CreateMateStack = createStackNavigator({
     CreateMates: CreateMate,
@@ -33,7 +14,7 @@ const CreateMateStack = createStackNavigator({
 
 CreateMateStack.navigationOptions = {
     tabBarLabel: 'Create Mates',
-    tabBarIcon: ({focused}) => (
+    tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
             name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
@@ -47,7 +28,7 @@ const MateStack = createStackNavigator({
 
 MateStack.navigationOptions = {
     tabBarLabel: 'Mates',
-    tabBarIcon: ({focused}) => (
+    tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
             name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
@@ -61,7 +42,7 @@ const ProfileStack = createStackNavigator({
 
 ProfileStack.navigationOptions = {
     tabBarLabel: 'Profile',
-    tabBarIcon: ({focused}) => (
+    tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
             name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
@@ -69,25 +50,8 @@ ProfileStack.navigationOptions = {
     ),
 };
 
-
-const SettingsStack = createStackNavigator({
-    Settings: SettingsScreen,
-});
-
-SettingsStack.navigationOptions = {
-    tabBarLabel: 'Settings',
-    tabBarIcon: ({focused}) => (
-        <TabBarIcon
-            focused={focused}
-            name={Platform.OS === 'ios' ? 'ios-options' : 'md-options'}
-        />
-    ),
-};
-
-export default createBottomTabNavigator({
+export default createMaterialTopTabNavigator ({
     MateStack,
     ProfileStack,
-    HomeStack,
-    CreateMateStack,
-    SettingsStack,
+    CreateMateStack
 });

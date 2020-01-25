@@ -1,6 +1,6 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
-export default StyleSheet.create({
+export const globalStyleSheet = StyleSheet.create({
     row: {
         flex: 1,
         flexDirection: 'row',
@@ -8,3 +8,7 @@ export default StyleSheet.create({
         flexWrap: "wrap"
     }
 });
+
+export const styleConstants = {
+    fontLarge: 20
+}

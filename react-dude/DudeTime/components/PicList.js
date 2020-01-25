@@ -1,13 +1,13 @@
 import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import DudePic from "./DudePic";
-import style from '../Style';
+import {globalStyleSheet} from '../Style';
 import {getDummyImage} from '../util/Util.js';
 
 const picList = ({dudes}) => {
     if (dudes) {
         return (
-            <View style={style.row}>
+            <View style={globalStyleSheet.row}>
                 {dudes.map((item, key) => {
                         let source = getDummyImage();
                         return (
@@ -21,7 +21,7 @@ const picList = ({dudes}) => {
         )
     } else {
         return (
-            <View style={style.row}/>
+            <View style={globalStyleSheet.row}/>
         )
     }
 };

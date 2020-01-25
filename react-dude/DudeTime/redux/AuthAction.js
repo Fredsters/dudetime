@@ -61,6 +61,19 @@ export function updateUserContacts(contacts) {
     };
 }
 
+export function fetchUserContacts() {
+    return async (dispatch) => {
+        dispatch(userBegin());
+        return serverFetch(`${root}/users/contacts`, 'GET')
+            .then(json => {
+                dispatch(updateContacts(json));
+                return json;
+            })
+            .catch(error => dispatch(userFailure(error)));
+    };
+}
+
+
 export const USER_BEGIN = 'USER_BEGIN';
 export const USER_FAILURE = 'USER_FAILURE';
 export const NEW_USER_SUCCESS = 'NEW_USER_SUCCESS';
@@ -69,8 +82,7 @@ export const UPDATE_USER_IMAGE_SUCCESS = 'UPDATE_USER_IMAGE_SUCCESS';
 export const STORE_AUTH_INFO = 'STORE_AUTH_INFO';
 export const FETCH_USER_SUCCESS = 'FETCH_USER_SUCCESS';
 export const CLEAR_USER = 'CLEAR_USER';
-export const UPDATE_USER_CONTACTS = 'UPDATE_USER_CONTACTS';
-
+export const USER_CONTACTS = 'USER_CONTACTS';
 
 export const userBegin = () => ({
     type: USER_BEGIN
@@ -105,6 +117,6 @@ export const clearUser = () => ({
 });
 
 export const updateContacts = (user) => ({
-    type: UPDATE_USER_CONTACTS, user
+    type: USER_CONTACTS, user
 });
 

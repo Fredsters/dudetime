@@ -12,25 +12,36 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@expo/samples": "2.1.1",
-    "buffer": "^5.2.1",
-    "expo": "^32.0.0",
-    "firebase": "^5.9.4",
-    "moment": "^2.24.0",
-    "react": "16.5.0",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
-    "react-native-multiple-select": "^0.5.0",
-    "react-native-uuid": "^1.4.9",
-    "react-navigation": "^3.0.9",
-    "react-redux": "^6.0.1",
-    "redux": "^4.0.1",
-    "redux-persist": "^5.10.0",
-    "redux-thunk": "^2.3.0"
+    "@expo/samples": "3.0.3",
+    "@react-native-community/async-storage": "^1.7.1",
+    "@react-native-community/masked-view": "0.1.5",
+    "buffer": "5.4.3",
+    "expo": "^36.0.0",
+    "expo-google-app-auth": "^8.0.0",
+    "firebase": "7.7.0",
+    "i18n-js": "3.5.1",
+    "moment": "2.24.0",
+    "react": "16.9.0",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.1.tar.gz",
+    "react-native-gesture-handler": "~1.5.0",
+    "react-native-reanimated": "^1.7.0",
+    "react-native-safe-area-context": "0.6.0",
+    "react-native-tab-view": "2.12.0",
+    "react-native-uuid": "1.4.9",
+    "react-navigation": "4.0.10",
+    "react-navigation-stack": "^2.0.16",
+    "react-navigation-tabs": "^2.7.0",
+    "react-redux": "7.1.3",
+    "reanimated": "0.0.1-alpha",
+    "redux": "4.0.5",
+    "redux-persist": "6.0.0",
+    "redux-thunk": "2.3.0",
+    "expo-contacts": "~8.0.0",
+    "expo-font": "~8.0.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "^5.0.0",
-    "jest-expo": "^32.0.0",
-    "reactotron-react-native": "^3.2.2"
+    "babel-preset-expo": "^8.0.0",
+    "jest-expo": "^36.0.0"
   },
   "private": true
 }

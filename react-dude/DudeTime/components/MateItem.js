@@ -1,16 +1,16 @@
 import React from 'react';
-import {Image, Slider, StyleSheet, Text, View} from 'react-native';
+import { Image, Slider, StyleSheet, Text, View } from 'react-native';
 import PicList from './PicList';
 import TagList from './TagList';
 import DudePic from "./DudePic";
-import {getDummyImage} from "../util/Util";
-import style from '../Style';
+import { getDummyImage } from "../util/Util";
+import { globalStyleSheet, styleConstants } from '../Style';
 import Moment from 'moment';
 import AcceptSlider from './AcceptSlider';
 import Colors from "../constants/Colors";
-import {connect} from "react-redux";
-import {bindActionCreators} from 'redux';
-import {acceptMate} from '../redux/MateActions';
+import { connect } from "react-redux";
+import { bindActionCreators } from 'redux';
+import { acceptMate } from '../redux/MateActions';
 
 const source = getDummyImage();
 
@@ -18,25 +18,28 @@ class MateItem extends React.Component {
 
     render() {
         let mate = this.props.item;
+
         return (
             <View style={styles.mateItem}>
                 <View style={styles.header}>
-                    <DudePic size={70}
-                             source={{uri: mate.owner.picturePath}}
-                    />
+                    {mate.owner ? (
+                        <DudePic size={70}
+                            source={{ uri: mate.owner.picturePath }}
+                        />) : (<View />)
+                    }
                     <Text style={styles.title}>{mate.title}</Text>
                 </View>
 
-                <TagList tags={mate.tags}/>
-                <PicList dudes={mate.participants}/>
+                <TagList tags={mate.tags} />
+                <PicList dudes={mate.participants} />
 
-                <View style={[styles.figures, style.row]}>
+                <View style={[styles.figures, globalStyleSheet.row]}>
                     <View><Text style={styles.figureText}>{mate.location}</Text><Text
                         style={styles.figureText}>{mate.subLocation}</Text></View>
                     <View><Text style={styles.figureText}>{Moment(mate.time).format('ddd, L')}</Text><Text
                         style={styles.figureText}>{Moment(mate.time).format(Moment.HTML5_FMT.TIME)}</Text></View>
                 </View>
-                <AcceptSlider myFunc={this.handleMyFunc.bind(this)}/>
+                <AcceptSlider myFunc={this.handleMyFunc.bind(this)} />
             </View>
         );
     }
@@ -60,7 +63,7 @@ const styles = StyleSheet.create({
     },
     title: {
         color: Colors.green,
-        fontSize: 20,
+        fontSize: styleConstants.fontLarge,
         marginLeft: 20,
         flex: 1,
         flexWrap: 'wrap'

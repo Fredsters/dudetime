@@ -4,7 +4,10 @@ import { connect } from "react-redux";
 import colors from "../constants/Colors.js"
 import { bindActionCreators } from 'redux';
 import { newUser, storeAuthInfo, updateProfilePicture, updateUser, clearUser, updateUserContacts } from "../redux/AuthAction";
-import { Contacts, Google, ImagePicker, Permissions } from 'expo';
+import { ImagePicker, Permissions } from 'expo';
+import { Google } from "expo-google-app-auth";
+import * as Contacts from 'expo-contacts';
+
 import { clientId } from "../constants/network";
 import myFirebase from "../network/firebase";
 import * as firebase from 'firebase';
@@ -12,11 +15,12 @@ import * as firebase from 'firebase';
 import phone from "../network/phone";
 
 
-var RCTNetworking = require("RCTNetworking");
+//var RCTNetworking = require("RCTNetworking");
 
 class Profile extends React.Component {
     constructor(props) {
         super(props);
+        this.persistor = this.props.screenProps.persistor;
         this.state = {
             userName: this.props.user.userName,
             picturePath: this.props.user.picturePath,
@@ -28,6 +32,7 @@ class Profile extends React.Component {
 
         this.retrieveContacts(); //Todo contacts in backend needs to be updated regularly
 
+        /*
         firebase.auth().onAuthStateChanged(async (user) => {
             if (user) {
                 this.setState({
@@ -39,7 +44,7 @@ class Profile extends React.Component {
             } else {
                 await this.login();
             }
-        });
+        }); */
     }
 
     login = async () => {
@@ -73,6 +78,10 @@ class Profile extends React.Component {
             console.log("Error authenticating the user", e);
             alert("The authentication failed, dammit!!");
         }
+    };
+
+    purgePersistor = async () => {
+        this.persistor.purge();
     };
 
     retrieveContacts = async () => {
@@ -142,8 +151,8 @@ class Profile extends React.Component {
     };
 
     clearCookies = () => {
-        RCTNetworking.clearCookies(() => {
-        });
+        /*RCTNetworking.clearCookies(() => {
+        });*/
     };
 
     logout = async () => {
@@ -161,6 +170,7 @@ class Profile extends React.Component {
     };
 
     render() {
+
         return (
             <ScrollView>
                 <View style={styles.container}>
@@ -203,6 +213,9 @@ class Profile extends React.Component {
                         </Button>
                         <Button title="update user contacts"
                             onPress={this.props.updateUserContacts.bind(this, { contacts: this.contacts })}>
+                        </Button>
+                        <Button title="purge store"
+                            onPress={this.purgePersistor}>
                         </Button>
                     </View>
                 </View>
