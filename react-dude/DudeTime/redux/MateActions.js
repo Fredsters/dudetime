@@ -10,7 +10,7 @@ export function fetchMates() {
             .then(res => res.json())
             .then(json => {
                 dispatch(fetchMatesSuccess(json));
-                return json.mates;
+                //return json.mates;
             })
             .catch(error => dispatch(matesFailure(error)));
     };

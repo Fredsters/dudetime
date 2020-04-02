@@ -28,7 +28,9 @@ exports.getCurrentUser = async (ctx, next) => {
     //todo only query needed fields
     //ctx.params named route parameters
     //ctx.request.query ?
-    const user = await User.findById(ctx.session.userId);
+    //const user = await User.findById(ctx.session.userId);
+    console.log("getCurrentUser");
+    const user = (await User.find({}).exec())[0];
     if (!user) {
         ctx.throw(500, "There was an error retrieving your contacts.");
     } else {

@@ -41,8 +41,23 @@ export function fetchUsers() {
     return async (dispatch) => {
         dispatch(userBegin());
         return serverFetch(`${root}/users`, 'GET')
+            .then(res => res.json())
             .then(json => {
                 dispatch(fetchUsersSuccess(json));
+                return json;
+            })
+            .catch(error => dispatch(userFailure(error)));
+    };
+}
+
+export function fetchCurrentUser() {
+    return (dispatch) => {
+        dispatch(userBegin());
+        return fetch(`${root}/currentuser`, {
+            method: "GET"})
+            .then(res => res.json())
+            .then(json => {
+                dispatch(fetchCurrentUserSuccess(json));
                 return json;
             })
             .catch(error => dispatch(userFailure(error)));
@@ -81,6 +96,7 @@ export const UPDATE_USER_SUCCESS = 'UPDATE_USER_SUCCESS';
 export const UPDATE_USER_IMAGE_SUCCESS = 'UPDATE_USER_IMAGE_SUCCESS';
 export const STORE_AUTH_INFO = 'STORE_AUTH_INFO';
 export const FETCH_USER_SUCCESS = 'FETCH_USER_SUCCESS';
+export const FETCH_CURRENT_USER_SUCCESS = 'FETCH_CURRENT_USER_SUCCESS';
 export const CLEAR_USER = 'CLEAR_USER';
 export const USER_CONTACTS = 'USER_CONTACTS';
 
@@ -112,9 +128,14 @@ export const fetchUsersSuccess = users => ({
     type: FETCH_USER_SUCCESS, users
 });
 
+export const fetchCurrentUserSuccess = user => ({
+    type: FETCH_CURRENT_USER_SUCCESS, user
+});
+
 export const clearUser = () => ({
     type: CLEAR_USER
 });
+
 
 export const updateContacts = (user) => ({
     type: USER_CONTACTS, user

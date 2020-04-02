@@ -3,55 +3,29 @@ import { Platform } from 'react-native';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
 import {createStackNavigator} from "react-navigation-stack"
 
-import TabBarIcon from '../components/TabBarIcon';
 import CreateMate from '../screens/CreateMate';
-import MateList from '../screens/MateList';
+import TabView from '../components/TabView';
 import Profile from '../screens/Profile';
+import MateList from '../screens/MateList';
+import MateTabView from '../screens/MateTabView';
 
-const CreateMateStack = createStackNavigator({
+const NavStack = createStackNavigator({
+    Mates: MateTabView,
     CreateMates: CreateMate,
+    Profile: Profile
 });
-
-CreateMateStack.navigationOptions = {
-    tabBarLabel: 'Create Mates',
-    tabBarIcon: ({ focused }) => (
-        <TabBarIcon
-            focused={focused}
-            name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
-        />
-    ),
-};
-
-const MateStack = createStackNavigator({
-    Mates: MateList,
-});
-
+/*
 MateStack.navigationOptions = {
-    tabBarLabel: 'Mates',
     tabBarIcon: ({ focused }) => (
         <TabBarIcon
             focused={focused}
             name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
         />
     ),
-};
-
-const ProfileStack = createStackNavigator({
-    Profile: Profile,
-});
-
-ProfileStack.navigationOptions = {
-    tabBarLabel: 'Profile',
-    tabBarIcon: ({ focused }) => (
-        <TabBarIcon
-            focused={focused}
-            name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
-        />
-    ),
-};
-
-export default createMaterialTopTabNavigator ({
+};*/
+export default NavStack ;
+/*createMaterialTopTabNavigator ({
     MateStack,
     ProfileStack,
     CreateMateStack
-});
+});*/

@@ -1,6 +1,7 @@
 import {
     CLEAR_USER,
     FETCH_USER_SUCCESS,
+    FETCH_CURRENT_USER_SUCCESS,
     NEW_USER_SUCCESS,
     STORE_AUTH_INFO,
     USER_CONTACTS,
@@ -16,7 +17,7 @@ const initialState = {
     error: null
 };
 
-export default function mateReducer(state = initialState, action) {
+export default function authReducer(state = initialState, action) {
     switch (action.type) {
         case USER_BEGIN:
             return {
@@ -72,6 +73,13 @@ export default function mateReducer(state = initialState, action) {
                 user: {
                     ...state.user
                     // userContacts: action.users
+                }
+            };
+        case FETCH_CURRENT_USER_SUCCESS:
+            return {
+                ...state,
+                user: {
+                    ...action.user
                 }
             };
         case CLEAR_USER:

@@ -5,8 +5,7 @@ import Colors from "../constants/Colors";
 
 const styles = StyleSheet.create({
     tag: {
-        marginLeft: 5,
-        marginRight: 5,
+        marginRight: 10,
         color: Colors.white,
         fontSize: 16
     }

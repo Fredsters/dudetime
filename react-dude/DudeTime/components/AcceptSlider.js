@@ -91,7 +91,7 @@ class AcceptSlider extends React.Component {
             if (!this.state.accepted) {
                 this.setState({
                     iconName: "checkcircleo",
-                    gradientColors: [Colors.cyan, Colors.yellow],
+                    gradientColors: [Colors.cyan, Colors.green],
                     text: "Hell Yeah!!!",
                     accepted: true
                 });

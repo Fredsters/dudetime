@@ -6,7 +6,7 @@ import DudePic from "./DudePic";
 import { getDummyImage } from "../util/Util";
 import { globalStyleSheet, styleConstants } from '../Style';
 import Moment from 'moment';
-import AcceptSlider from './AcceptSlider';
+//import AcceptSlider from './AcceptSlider';
 import Colors from "../constants/Colors";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
@@ -23,13 +23,17 @@ class MateItem extends React.Component {
             <View style={styles.mateItem}>
                 <View style={styles.header}>
                     {mate.owner ? (
-                        <DudePic size={70}
-                            source={{ uri: mate.owner.picturePath }}
-                        />) : (<View />)
-                    }
-                    <Text style={styles.title}>{mate.title}</Text>
+                        <View>
+                            <DudePic size={70}
+                                source={{ uri: mate.owner.picturePath }}
+                            /> 
+                            <Text style={styles.title}>{mate.owner.userName}</Text>
+                        </View>)
+                        : (<View />)
+                    }    
                 </View>
-
+ 
+                <Text style={styles.title}>Grillen und Chillen bis die Wecker klingeln</Text>
                 <TagList tags={mate.tags} />
                 <PicList dudes={mate.participants} />
 
@@ -39,12 +43,12 @@ class MateItem extends React.Component {
                     <View><Text style={styles.figureText}>{Moment(mate.time).format('ddd, L')}</Text><Text
                         style={styles.figureText}>{Moment(mate.time).format(Moment.HTML5_FMT.TIME)}</Text></View>
                 </View>
-                <AcceptSlider myFunc={this.handleMyFunc.bind(this)} />
+              
             </View>
         );
     }
 
-
+ // <AcceptSlider myFunc={this.handleMyFunc.bind(this)} />
     handleMyFunc = (mateStatus) => {
         this.props.acceptMate(this.props.item._id);
         // acceptMate(this.props.item._id);
@@ -56,24 +60,22 @@ const styles = StyleSheet.create({
     header: {
         flex: 1,
         flexDirection: 'row',
-        padding: 5,
-        backgroundColor: Colors.lightBlack,
-        height: 90,
+        height: 60,
         alignItems: 'center'
     },
     title: {
-        color: Colors.green,
+        color: Colors.white,
         fontSize: styleConstants.fontLarge,
-        marginLeft: 20,
         flex: 1,
         flexWrap: 'wrap'
     },
     mateItem: {
-        backgroundColor: Colors.grey,
-        marginBottom: 20
+        backgroundColor: Colors.black,
+        marginBottom: 20,
+        padding: 10,
+        flex: 1
     },
     figures: {
-        backgroundColor: Colors.lightBlack,
         justifyContent: 'space-between'
     },
     figureText: {
