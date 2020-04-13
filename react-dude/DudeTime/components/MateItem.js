@@ -1,58 +1,99 @@
-import React from 'react';
-import { Image, Slider, StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Image, Slider, StyleSheet, Text, View, TouchableOpacity, PanResponder, Animated } from 'react-native';
 import PicList from './PicList';
 import TagList from './TagList';
 import DudePic from "./DudePic";
 import { getDummyImage } from "../util/Util";
 import { globalStyleSheet, styleConstants } from '../Style';
-import Moment from 'moment';
+import { Ionicons } from '@expo/vector-icons'
+import moment from 'moment';
+import Enum from "../constants/Enum";
+import 'moment/min/locales.min';
 //import AcceptSlider from './AcceptSlider';
 import Colors from "../constants/Colors";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
 import { acceptMate } from '../redux/MateActions';
+import AcceptArea from "../components/AcceptArea";
 
 const source = getDummyImage();
 
 class MateItem extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            status : "new"
+        }
+    }
+
+    componentDidMount() {
+        //todo get user's language from phone
+       moment.updateLocale('de');
+
+    }
+
+    handleConfirmed(confirmation) {
+        console.log("handleConfirmed");
+        //this.setState({status: confirmation});
+    
+    }
+
     render() {
+        
         let mate = this.props.item;
-
+        mate.owner = {
+            userName: "Frederik"
+        };
+        mate.participants = [
+            "Georg",
+            "janis",
+            "lars",
+            "Theresa"
+        ]
         return (
-            <View style={styles.mateItem}>
-                <View style={styles.header}>
-                    {mate.owner ? (
-                        <View>
-                            <DudePic size={70}
-                                source={{ uri: mate.owner.picturePath }}
-                            /> 
-                            <Text style={styles.title}>{mate.owner.userName}</Text>
-                        </View>)
-                        : (<View />)
-                    }    
-                </View>
- 
-                <Text style={styles.title}>Grillen und Chillen bis die Wecker klingeln</Text>
-                <TagList tags={mate.tags} />
-                <PicList dudes={mate.participants} />
+            <View style={{backgroundColor: Colors.black}}>
+                <View style={[styles.mateItem]}>
+                    <View style={[styles.header, styles.container]}>
+                        {mate.owner ? (
+                            <View>
+                                <DudePic size={70}
+                                    source={source}
+                                /> 
+                                <Text style={styles.title}>{mate.owner.userName}</Text>
+                            </View>)
+                            : (<View />)
+                        }    
+                    </View>
+    
+                    <Text style={[styles.title]}>Grillen und Chillen bis die Wecker klingeln</Text>
+                    <TagList tags={mate.tags} />
 
-                <View style={[styles.figures, globalStyleSheet.row]}>
-                    <View><Text style={styles.figureText}>{mate.location}</Text><Text
-                        style={styles.figureText}>{mate.subLocation}</Text></View>
-                    <View><Text style={styles.figureText}>{Moment(mate.time).format('ddd, L')}</Text><Text
-                        style={styles.figureText}>{Moment(mate.time).format(Moment.HTML5_FMT.TIME)}</Text></View>
+                    <View style={[globalStyleSheet.row, styles.container, {marginBottom: 5}]}>                
+                        <Ionicons name="ios-time" size={30} color={Colors.green} style={{marginRight: 10}}/>
+                        <Text style={styles.figureText}>{moment(mate.time).format('LLLL')}</Text>
+                    </View>
+                    <View style={[globalStyleSheet.row, styles.container, {marginBottom: 15}]}>
+                        <Ionicons name="ios-pin" size={30} width={30} color={Colors.green} style={{marginRight: 13, marginLeft: 3}}/>
+                        <Text style={[styles.figureText, styles.marginRight]}>{mate.location}</Text>
+                        <Text style={styles.figureText}> {mate.subLocation}</Text>
+                    </View>
+
+                    <PicList dudes={mate.participants} /> 
+
+                    
+
+                    {/* <View style={[globalStyleSheet.row, styles.container, styles.buttonContainer]}>
+                        <DudeButton set={this.state.status === "reject"} type={"reject"} style={styles.button} color={Colors.red} icon={"cross"} text={"Nope!"} translateX={70} onConfirmed={this.handleConfirmed.bind(this)}/>
+                        <DudeButton set={this.state.status === "confirm"} type={"confirm"} style={styles.button} color={Colors.green} icon={"check"} text={"I'm In!!!"} translateX={-70} onConfirmed={this.handleConfirmed.bind(this)}/>
+                    </View> */}
+
+
                 </View>
-              
+                <AcceptArea status={Enum.MateStatus.Open} onStatusChangedHandler={this.handleConfirmed.bind(this)}/>
             </View>
         );
     }
-
- // <AcceptSlider myFunc={this.handleMyFunc.bind(this)} />
-    handleMyFunc = (mateStatus) => {
-        this.props.acceptMate(this.props.item._id);
-        // acceptMate(this.props.item._id);
-    };
 }
 
 
@@ -67,19 +108,47 @@ const styles = StyleSheet.create({
         color: Colors.white,
         fontSize: styleConstants.fontLarge,
         flex: 1,
-        flexWrap: 'wrap'
+        flexWrap: 'wrap',
+        fontWeight: "bold",
+        fontFamily: "beachday",
+        marginBottom: 5
     },
     mateItem: {
         backgroundColor: Colors.black,
         marginBottom: 20,
         padding: 10,
-        flex: 1
+        flex: 1,
+        overflow: 'hidden'
     },
     figures: {
         justifyContent: 'space-between'
     },
     figureText: {
-        color: Colors.green,
+        color: Colors.white,
+        fontSize: styleConstants.fontMedium
+    },
+    container: {
+        alignItems: "center",
+        flex: 1
+    },
+    marginRight: {
+        marginRight: 8
+    },
+    buttonContainer: {
+        marginTop: 20
+    },
+    button: {
+        flex: 1,
+        alignItems: "center",
+        height: 40,
+        justifyContent: "center",
+        borderColor: Colors.lightGrey
+    },
+    abc: {
+        borderRadius: 50,
+        width: 0,
+        height: 0,
+        backgroundColor: Colors.green
     }
 });
 

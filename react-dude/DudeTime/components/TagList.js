@@ -8,13 +8,16 @@ const styles = StyleSheet.create({
         marginRight: 10,
         color: Colors.white,
         fontSize: 16
+    },
+    container: {
+        marginBottom: 15
     }
 });
 
 const TagList = ({tags}) => {
     if (tags) {
         return (
-            <View style={globalStyleSheet.row}>
+            <View style={[styles.container, globalStyleSheet.row]}>
                 {tags.map((item, key) => {
                         return (
                             <Text style={styles.tag} key={key}>{item}</Text>

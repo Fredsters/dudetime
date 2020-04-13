@@ -9,5 +9,8 @@ export const globalStyleSheet = StyleSheet.create({
 });
 
 export const styleConstants = {
-    fontLarge: 20
+    fontXLarge: 32,
+    fontLarge: 24,
+    fontMedium: 18,
+    fontSmall: 12
 }
