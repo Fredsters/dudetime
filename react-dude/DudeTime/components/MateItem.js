@@ -5,7 +5,7 @@ import TagList from './TagList';
 import DudePic from "./DudePic";
 import { getDummyImage } from "../util/Util";
 import { globalStyleSheet, styleConstants } from '../Style';
-import { Ionicons } from '@expo/vector-icons'
+import { Ionicons, Entypo } from '@expo/vector-icons'
 import moment from 'moment';
 import Enum from "../constants/Enum";
 import 'moment/min/locales.min';
@@ -35,6 +35,7 @@ class MateItem extends React.Component {
 
     handleConfirmed(confirmation) {
         console.log("handleConfirmed");
+        console.log(confirmation)
         //this.setState({status: confirmation});
     
     }
@@ -52,43 +53,38 @@ class MateItem extends React.Component {
             "Theresa"
         ]
         return (
-            <View style={{backgroundColor: Colors.black}}>
-                <View style={[styles.mateItem]}>
-                    <View style={[styles.header, styles.container]}>
+            <View style={styles.mateItem}>
+                <View style={[styles.mateItemContent]}>
+                   
                         {mate.owner ? (
-                            <View>
-                                <DudePic size={70}
+                            <View style={[styles.header, styles.container]}>
+                                <DudePic size={50}
                                     source={source}
                                 /> 
-                                <Text style={styles.title}>{mate.owner.userName}</Text>
+                                <Text style={[styles.nameText, {marginLeft: 15} ]}>{mate.owner.userName}</Text>
                             </View>)
                             : (<View />)
                         }    
-                    </View>
+                  
     
-                    <Text style={[styles.title]}>Grillen und Chillen bis die Wecker klingeln</Text>
+                    <Text style={[styles.title, {marginTop: 5}]}>Grillen und Chillen bis die Wecker klingeln</Text>
                     <TagList tags={mate.tags} />
 
                     <View style={[globalStyleSheet.row, styles.container, {marginBottom: 5}]}>                
-                        <Ionicons name="ios-time" size={30} color={Colors.green} style={{marginRight: 10}}/>
+                        <Ionicons name="ios-time" size={30} color={Colors.green} style={{marginRight: 10, marginLeft: 2}}/>
                         <Text style={styles.figureText}>{moment(mate.time).format('LLLL')}</Text>
                     </View>
-                    <View style={[globalStyleSheet.row, styles.container, {marginBottom: 15}]}>
-                        <Ionicons name="ios-pin" size={30} width={30} color={Colors.green} style={{marginRight: 13, marginLeft: 3}}/>
+                    <View style={[globalStyleSheet.row, styles.container, {marginBottom: 5}]}>
+                        <Ionicons name="ios-pin" size={30} width={30} color={Colors.green} style={{marginRight: 13, marginLeft: 5}}/>
                         <Text style={[styles.figureText, styles.marginRight]}>{mate.location}</Text>
                         <Text style={styles.figureText}> {mate.subLocation}</Text>
                     </View>
 
-                    <PicList dudes={mate.participants} /> 
-
+                    <View style={[globalStyleSheet.row, styles.container]}>                
+                        <Entypo name="check" size={30} width={30} color={Colors.green} style={{marginRight: 5}}/>  
+                        <PicList dudes={mate.participants}/> 
+                    </View>
                     
-
-                    {/* <View style={[globalStyleSheet.row, styles.container, styles.buttonContainer]}>
-                        <DudeButton set={this.state.status === "reject"} type={"reject"} style={styles.button} color={Colors.red} icon={"cross"} text={"Nope!"} translateX={70} onConfirmed={this.handleConfirmed.bind(this)}/>
-                        <DudeButton set={this.state.status === "confirm"} type={"confirm"} style={styles.button} color={Colors.green} icon={"check"} text={"I'm In!!!"} translateX={-70} onConfirmed={this.handleConfirmed.bind(this)}/>
-                    </View> */}
-
-
                 </View>
                 <AcceptArea status={Enum.MateStatus.Open} onStatusChangedHandler={this.handleConfirmed.bind(this)}/>
             </View>
@@ -101,7 +97,6 @@ const styles = StyleSheet.create({
     header: {
         flex: 1,
         flexDirection: 'row',
-        height: 60,
         alignItems: 'center'
     },
     title: {
@@ -113,12 +108,18 @@ const styles = StyleSheet.create({
         fontFamily: "beachday",
         marginBottom: 5
     },
-    mateItem: {
-        backgroundColor: Colors.black,
-        marginBottom: 20,
+    nameText: {
+        color: Colors.white,
+        fontSize: styleConstants.fontMedium,
+        fontFamily: "beachday",
+    },
+    mateItemContent: {
         padding: 10,
-        flex: 1,
-        overflow: 'hidden'
+        flex: 1
+    },
+    mateItem : {
+        backgroundColor: Colors.black,
+        overflow: "hidden"
     },
     figures: {
         justifyContent: 'space-between'

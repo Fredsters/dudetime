@@ -65,7 +65,8 @@ const styles = StyleSheet.create({
     acceptArea: {
         alignItems: "center",
         flex: 1,
-        borderBottomWidth: 5
+        borderBottomWidth: 5,
+        zIndex: -1
     },
     button: {
         flex: 1,

@@ -1,13 +1,13 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {globalStyleSheet} from '../Style';
+import {globalStyleSheet, styleConstants} from '../Style';
 import Colors from "../constants/Colors";
 
 const styles = StyleSheet.create({
     tag: {
         marginRight: 10,
         color: Colors.white,
-        fontSize: 16
+        fontSize: styleConstants.fontMedium
     },
     container: {
         marginBottom: 15

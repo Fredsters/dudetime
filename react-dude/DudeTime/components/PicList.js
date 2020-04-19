@@ -6,14 +6,18 @@ import {getDummyImage} from '../util/Util.js';
 
 const picList = ({dudes}) => {
     if (dudes) {
+        let textTranslateX = -25;
         return (
-            <View style={globalStyleSheet.row}>
+            <View style={[globalStyleSheet.row, {height: 50}]}>
                 {dudes.map((item, key) => {
+                        textTranslateX = textTranslateX + 25;
                         let source = getDummyImage();
                         return (
                             <DudePic key={key}
-                                     size={40}
+                                     size={50}
                                      source={source}
+                                     style={{transform: [{translateX: textTranslateX}], position: "absolute"}}
+                                     active={true}
                             />)
                     }
                 )}
