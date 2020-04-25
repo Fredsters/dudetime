@@ -1,4 +1,4 @@
-import {ACCEPT_MATE, CREATE_MATE, FETCH_MATES_SUCCESS, MATES_BEGIN, MATES_FAILURE} from './MateActions';
+import {ACCEPT_MATE, CREATE_MATE, FETCH_MATES_SUCCESS, MATES_BEGIN, MATES_FAILURE, MATE_DUMMY} from './MateActions';
 
 const initialState = {
     mates: [],
@@ -21,6 +21,13 @@ export default function mateReducer(state = initialState, action) {
                 loading: false,
                 mates: action.mates
             };
+
+        // case MATE_DUMMY:
+        //     return {
+        //         ...state,
+        //         dummy: action.data,
+        //         dummy2: "Hallo Fred"
+        //     };
 
         case MATES_FAILURE:
             return {

@@ -57,8 +57,8 @@ class MateItem extends React.Component {
                 <View style={[styles.mateItemContent]}>
                    
                         {mate.owner ? (
-                            <View style={[styles.header, styles.container]}>
-                                <DudePic size={50}
+                            <View style={[styles.header]}>
+                                <DudePic size={70}
                                     source={source}
                                 /> 
                                 <Text style={[styles.nameText, {marginLeft: 15} ]}>{mate.owner.userName}</Text>
@@ -118,8 +118,8 @@ const styles = StyleSheet.create({
         flex: 1
     },
     mateItem : {
-        backgroundColor: Colors.black,
-        overflow: "hidden"
+        backgroundColor: Colors.lightBlack,
+        //overflow: "hidden"
     },
     figures: {
         justifyContent: 'space-between'

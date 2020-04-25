@@ -12,5 +12,5 @@ export const styleConstants = {
     fontXLarge: 32,
     fontLarge: 24,
     fontMedium: 18,
-    fontSmall: 12
+    fontSmall: 16
 }

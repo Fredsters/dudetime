@@ -1,18 +1,18 @@
 import React from 'react';
-import { Button, Text, View, StyleSheet, Dimensions } from 'react-native';
+import { Button, Text, View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import Colors from "../constants/Colors";
-import Constants from 'expo-constants';
-import DudePic from "./DudePic";
-import * as Font from 'expo-font';
+import RoundedPic from './RoundedPic';
 
 const deviceWidth = Dimensions.get('window').width;
-const DudeHeader = ({pic}) => {
+const DudeHeader = ({pic, navigation}) => {
     return (
         <View style={styles.header}>
             <Text style={{fontFamily: 'beachday', fontSize: 34, color: Colors.white}}>Dudetime</Text>
-            <DudePic size={44}
-                source={{ uri: pic }}
-            />
+            <TouchableOpacity style={styles.button} onPress={()=>{navigation.navigate("Profile")}}>
+                <RoundedPic size={44}
+                    source={{ uri: pic }}
+                />
+            </TouchableOpacity>
         </View>
     );
 };
@@ -29,6 +29,8 @@ const styles = StyleSheet.create({
         height: 80,
         justifyContent: "space-between",
         alignItems: 'center'
+    },
+    button: {
     },
 });
 

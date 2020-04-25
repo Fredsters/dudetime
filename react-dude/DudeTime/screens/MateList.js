@@ -10,17 +10,6 @@ import MateItem from '../components/MateItem';
 
 class MateList extends React.Component {
 
-    componentDidMount() {
-        //if (this.props.auth && this.props.auth.user && this.props.auth.user.id) {
-            //this.props.fetchMates();
-        //} 
-        // else {
-        //     const { navigate } = this.props.navigation;
-        //     //todo navigate to user create screen, get phoneNumer, put in firstName, LastName, profile pic and 
-        //     navigate("Profile");
-        // }
-    }
-
     render() {
         const { error, loading, mates } = this.props.mate;
 

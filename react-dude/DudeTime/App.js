@@ -21,7 +21,8 @@ Reactotron.configure({ host: '192.168.0.241' })
 const persistConfig = {
     key: 'root',
     storage: AsyncStorage,
-    stateReconciler: autoMergeLevel2 // see "Merge Process" section for details.
+    stateReconciler: autoMergeLevel2, // see "Merge Process" section for details.
+    blacklist: ['mate']
 };
 
 const pReducer = persistReducer(persistConfig, rootReducer);

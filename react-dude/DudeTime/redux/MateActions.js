@@ -1,5 +1,12 @@
 import {root} from "../constants/network"
 
+
+// export function createDummyMate() {
+//     return dispatch => {
+//         dispatch(mateDummy("Theresa"));
+//     };
+// }
+
 export function fetchMates() {
     return dispatch => {
         dispatch(matesBegin());
@@ -46,6 +53,7 @@ export const FETCH_MATES_SUCCESS = 'FETCH_MATES_SUCCESS';
 export const MATES_FAILURE = 'MATES_FAILURE';
 export const ACCEPT_MATE = 'ACCEPT_MATE';
 export const CREATE_MATE = 'CREATE_MATE';
+export const MATE_DUMMY = 'MATE_DUMMY';
 
 export const matesBegin = () => ({
     type: MATES_BEGIN
@@ -66,3 +74,8 @@ export const acceptMate = mateId => ({
 export const createMateSuccess = mate => ({
     type: CREATE_MATE, mate
 });
+
+
+// export const mateDummy = data => ({
+//     type: MATE_DUMMY, data
+// });
