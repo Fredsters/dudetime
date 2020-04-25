@@ -48,7 +48,7 @@ const onStatusChanged = (newStatus) => {
 }
 
   return (
-    <View style={[globalStyleSheet.row, styles.acceptArea, {borderColor: status === Enum.MateStatus.Accepted ? Colors.green : status === Enum.MateStatus.Declined ? Colors.red : Colors.black}]}>
+    <View style={[globalStyleSheet.row, styles.acceptArea, {borderColor: status === Enum.MateStatus.Accepted ? Colors.green : status === Enum.MateStatus.Declined ? Colors.red : Colors.lightBlack}]}>
         <TouchableOpacity style={styles.button} onPress={()=>onStatusChanged(Enum.MateStatus.Declined)}>
             <AnimatedEntypo name="cross" size={crossSize} color={Colors.red} style={{fontSize: crossSize, ...styles.icon}} />
         </TouchableOpacity>

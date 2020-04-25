@@ -7,13 +7,15 @@ import { bindActionCreators } from 'redux';
 import DudeHeader from '../components/DudeHeader';
 import Colors from '../constants/Colors';
 import * as Font from 'expo-font';
+import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
+import MateList from './NewMates';
 
 class MateTabView extends React.Component {
 
     componentDidMount() {
         console.log("componentDidMount");
         //const a = await 
-        this.props.fetchCurrentUser();
+        //this.props.fetchCurrentUser();
         // this.props.createDummyMate();
 
         console.log("aaha");
@@ -21,7 +23,7 @@ class MateTabView extends React.Component {
             auth: this.props.auth
         });
         this.props.navigation.setParams({ auth: this.props.auth });
-        this.props.navigation.navigate("Profile");
+        //this.props.navigation.navigate("Profile");
         // this.state = {
         //     userName: this.props.user.userName,
         //     picturePath: this.props.user.picturePath
@@ -51,7 +53,8 @@ class MateTabView extends React.Component {
       };
 
     render() {
-        return <TabView/>;
+        //return <TabView/>;
+        return <MateList/>
     };
     
 }

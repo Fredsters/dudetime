@@ -1,38 +1,32 @@
 import React from 'react';
-import { FlatList, StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
 import { fetchMates } from "../redux/MateActions";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
 import Colors from "../constants/Colors";
-import MateItem from '../components/MateItem';
+import { Entypo } from '@expo/vector-icons'
+import MateList from '../components/MateList';
+import CreateButton from '../components/CreateButton';
 
-// import MateItem from "../components/MateItem";
+class NewMates extends React.Component {
 
-class MateList extends React.Component {
+    static navigationOptions = {
+        tabBarLabel: "News"
+    };
 
     render() {
         const { error, loading, mates } = this.props.mate;
-
         if (error) {
             return <Text>Error! {error.message}</Text>;
         }
-
         // if (loading) {
         //     return <Text>Loading...</Text>;
         // }
-
         return (
             <View style={styles.container}>
-                <FlatList
-                    data={mates}
-                    keyExtractor={(item) => item._id}
-                    renderItem={({ item }) =>
-                        <MateItem
-                            item={item}
-                        />
-                    }
-                />
+                <MateList mates={mates}/>
                 <Button title="load Mates" onPress={this.props.fetchMates} />
+                {/* <CreateButton/> */}
             </View>
         );
     }
@@ -52,8 +46,9 @@ function mapDispatchToProps(dispatch) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 15
+        padding: 15,
+        backgroundColor: Colors.grey
     }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(MateList);
+export default connect(mapStateToProps, mapDispatchToProps)(NewMates);

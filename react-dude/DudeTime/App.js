@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AsyncStorage, Platform, StatusBar, StyleSheet, View, Text } from 'react-native';
+import { StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import { Asset } from 'expo-asset';
@@ -8,29 +8,14 @@ import { Ionicons } from '@expo/vector-icons';
 import AppNavigator from './navigation/AppNavigator';
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/lib/integration/react';
-import { applyMiddleware, createStore } from "redux";
-import thunk from "redux-thunk";
-import { persistReducer, persistStore } from 'redux-persist';
-import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
-import rootReducer from './redux/RootReducer';
+import store from "./redux/store";
+import { persistStore } from 'redux-persist';
 import Colors from './constants/Colors';
 /*
 Reactotron.configure({ host: '192.168.0.241' })
     .useReactNative();*/
 
-const persistConfig = {
-    key: 'root',
-    storage: AsyncStorage,
-    stateReconciler: autoMergeLevel2, // see "Merge Process" section for details.
-    blacklist: ['mate']
-};
 
-const pReducer = persistReducer(persistConfig, rootReducer);
-
-const store = createStore(
-    pReducer,
-    applyMiddleware(thunk)
-);
 const persistor = persistStore(store);
 
 export default class App extends React.Component {

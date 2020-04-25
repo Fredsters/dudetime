@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     },
     mateItem : {
         backgroundColor: Colors.lightBlack,
-        //overflow: "hidden"
+        overflow: "hidden"
     },
     figures: {
         justifyContent: 'space-between'

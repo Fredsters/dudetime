@@ -2,7 +2,7 @@ import * as React from 'react';
 import { View, StyleSheet, Dimensions, StatusBar } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import Colors from "../constants/Colors";
-import MateList from '../screens/MateList';
+import MateList from '../screens/NewMates';
 
 const FirstRoute = () => (
   <View style={[styles.scene]} >

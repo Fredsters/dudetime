@@ -1,32 +1,35 @@
 import React from 'react';
-import { Button, Text, View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { useSelector } from 'react-redux'
 import Colors from "../constants/Colors";
 import RoundedPic from './RoundedPic';
+import CreateButton from './CreateButton';
 
 const deviceWidth = Dimensions.get('window').width;
-const DudeHeader = ({pic, navigation}) => {
+const createButtonOffset = Dimensions.get('window').height - 120;
+const DudeHeader = ({navigation}) => {
+    user = useSelector(state => state.auth.user);
+
     return (
         <View style={styles.header}>
             <Text style={{fontFamily: 'beachday', fontSize: 34, color: Colors.white}}>Dudetime</Text>
-            <TouchableOpacity style={styles.button} onPress={()=>{navigation.navigate("Profile")}}>
-                <RoundedPic size={44}
-                    source={{ uri: pic }}
+            <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("Profile")}>
+                <RoundedPic size={46}
+                    source={{ uri: user.picturePath }}
                 />
             </TouchableOpacity>
+            <CreateButton outerStyles={{top: createButtonOffset, right: 20}} onPress={()=>navigation.navigate("CreateMates")} />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     header: {
-        borderBottomWidth: 0,
         paddingLeft: 10,
         paddingRight: 10,
         flexDirection: 'row',
         backgroundColor: Colors.grey,
-        alignSelf: 'stretch',
         width: deviceWidth,
-        height: 80,
         justifyContent: "space-between",
         alignItems: 'center'
     },
