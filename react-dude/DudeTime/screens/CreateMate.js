@@ -1,143 +1,200 @@
 import React from 'react';
-import { Button, StyleSheet, Text, View, ScrollView, TextInput } from 'react-native';
+import { Button, Text, StyleSheet, TextInput, View, TouchableOpacity } from 'react-native';
 import { connect } from "react-redux";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Modal from 'react-native-modal';
 import { bindActionCreators } from 'redux';
-import { createMate } from "../redux/MateActions";
-import { fetchUserContacts } from "../redux/AuthAction";
-import DudePicker from '../components/DudePicker';
-import i18n from "../constants/i18n";
-import Colors from '../constants/Colors';
-import { styleConstants } from '../Style';
-import autoMergeLevel1 from 'redux-persist/es/stateReconciler/autoMergeLevel1';
+import { styleConstants, globalStyleSheet } from '../Style';
+import Colors from '../constants/Colors.js';
+import moment from 'moment';
+import 'moment/min/locales.min';
+import { Ionicons, Entypo } from '@expo/vector-icons'
+
+//var RCTNetworking = require("RCTNetworking");
 
 class CreateMate extends React.Component {
-
-    static navigationOptions = {
-        title: "Create a Mate"
-    }
-
     constructor(props) {
         super(props);
-
         this.state = {
-            selectedItems: [],
-            tags: []
-        };
+            title: "",
+            mode: null,
+            date: new Date(),
+            modalVisible: false,
+            showDate: false,
+            showTime: false
+        }
     }
 
-    async componentDidMount() {
-        await this.props.fetchUserContacts()
-        this.setState({
-            userContacts: this.props.auth.user.userContacts
-        });
+    componentDidMount() {
+        //todo get user's language from phone
+       moment.updateLocale('de');
+
     }
 
-    onSelectedItemsChange = selectedItems => {
-        this.setState({ selectedItems: selectedItems });
+    setDate (event, date) {
+        if(date > new Date()) {
+            this.setState({date});   
+        }
     };
 
-    onHandleBlur = event => {
-        console.log(event);
-    }
-
-    onHandleKeyPress = event => {
-        console.log(event);
-    }
-
-    onHandleSubmit = event => {
-        console.log(event);
-    }
+    static navigationOptions = {
+        headerStyle: {
+            backgroundColor: Colors.grey,
+            shadowColor: 'transparent'
+        },
+        title: "New Mate",
+        headerTintColor: Colors.green,
+        headerBackTitle: "Cancel",
+        headerTitleStyle: {
+            color: Colors.white,
+            fontWeight: 'bold',
+            fontSize: styleConstants.fontMedium
+        },
+        headerRight: () => (
+            <Button
+            onPress={() => alert("save")}
+            title="Go for it!!!"
+            color={Colors.green}
+            />
+        )
+      };
 
     render() {
 
-        if (this.state.userContacts) {
-            return (
-                <ScrollView style={{
-                    flex: 1
-                }}>
-                    {/* <Button title="create Dummy Mate"
-                        onPress={this.props.createMate}>
-                    </Button>
-
-                    <Button title="load Contacts Dummy Mate"
-                        onPress={this.props.fetchUserContacts}>
-                    </Button> */}
-                    <View style={styles.container}>
-                        <View style={styles.titleContainer}>
-                            <Text style={styles.titleLabel}>{i18n.t('title')}</Text>
-                            <TextInput style={styles.titleInput} placeholder="lalal"></TextInput>
-                        </View>
-
-                        <View style={[styles.titleContainer, styles.tagContainer]}>
-                            <Text style={styles.titleLabel}>{i18n.t('tags')}</Text>
-
-                            <View>
-                                {this.state.tags.map((item, key) => {
-                                    <Text style={styles.tag} key={key}>{item}</Text>
-                                }
-                                )}
-                            </View>
-
-                            <TextInput style={[styles.titleInput]} placeholder={i18n.t('addTagDescription')}
-                                onBlur={this.onHandleBlur}
-                                onKeyPress={this.onHandleKeyPress}
-                                onSubmitEditing={this.onHandleSubmit}></TextInput>
-                        </View>
+        return (
+            <View style={styles.container}>
+                <View style={styles.form}>
+                    <View>            
+                        <Text style={[styles.text, styles.label]}>Title:</Text>
+                        <TextInput selectionColor={Colors.green} style={[styles.textInput, styles.text]} autoCompleteType="off" 
+                            autoCorrect={false}
+                            placeholderTextColor={Colors.lightGrey}
+                            placeholder="Give your new Mate a nice title"
+                            defaultValue={this.state.title}
+                            returnKeyType='done'
+                            onChangeText={(title)=>this.setState({title})}
+                            />
                     </View>
+                    <View>         
+                        <Text style={[styles.text, styles.label]}>Date:</Text>
+                        <TouchableOpacity onPress={()=>this.setState({modalVisible : !this.state.dateVisible, mode: 'date'})}>
+                            <TextInput selectionColor={Colors.green} style={[styles.textInput, styles.text]}
+                                editable={false}
+                                pointerEvents="none"
+                                placeholderTextColor={Colors.lightGrey}
+                                placeholder="Select a Date"
+                                value={this.state.showDate ? moment(this.state.date).format('dddd, LL') : ""}
+                            />
+                            <Entypo style={styles.iconStyle} name="calendar" size={30} color={Colors.green} />
+                        </TouchableOpacity>
+                    </View>
+                    <View>         
+                        <Text style={[styles.text, styles.label]}>Time:</Text>
+                        <TouchableOpacity onPress={()=>this.setState({modalVisible : !this.state.dateVisible, mode: 'time'})}>
+                            <TextInput selectionColor={Colors.green} style={[styles.textInput, styles.text]}
+                                editable={false}
+                                pointerEvents="none"
+                                placeholderTextColor={Colors.lightGrey}
+                                placeholder="Select a Time"
+                                value={this.state.showTime ? moment(this.state.date).format('LT') : ""}
+                            />
+                            <Ionicons style={[styles.iconStyle, {top: 19}]} name="md-time" size={30} color={Colors.green} />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <Modal       
+                    animationType="slide"
+                    visible={this.state.modalVisible}
+                    style={styles.modal}
+                    onBackdropPress={() => this.setState({modalVisible: false})}
+                    >
+                    <View style={styles.modalView}>
+                        <View style={styles.modalButtons}>
+                            {this.state.mode === 'date' ?
+                            <Button color={Colors.green} onPress={() => this.setState({showDate: true, modalVisible: false})} title="Take this date!"/>
+                            : <Button color={Colors.green} onPress={() => this.setState({showTime: true, modalVisible: false})} title="Take this Time!"/>
+                            }
+                            <Button color={Colors.green} onPress={() => this.setState({modalVisible: false})} title="Cancel"/>
+                        </View>
+                        <DateTimePicker
+                            value={this.state.date}
+                            mode={this.state.mode}
+                            is24Hour={true}
+                            minuteInterval={15}
+                            display="spinner"
+                            minimumDate={this.state.mode === 'date' ? new Date() : null}
+                            onChange={this.setDate.bind(this)}
+                        />
+                    </View>
+                </Modal>
+            </View>
 
-
-
-                    <DudePicker style={{
-                        flex: 1
-                    }} participants={this.state.participants} userContacts={this.state.userContacts}></DudePicker>
-
-                </ScrollView>
-            );
-        } else {
-            return <Text>No Users</Text>
-        }
-    }
-}
-
-const mapStateToProps = (state) => {
-    const { mate, auth } = state;
-    return { mate, auth };
-};
-
-function mapDispatchToProps(dispatch) {
-    return {
-        ...bindActionCreators({ createMate, fetchUserContacts }, dispatch)
+        );
     }
 }
 
 const styles = StyleSheet.create({
+    iconStyle: {
+        position: 'absolute',
+        right: 10,
+        top: 18
+    },
+    modalButtons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingLeft: 10,
+        paddingRight: 10,
+        marginBottom: 5
+    },  
+    modal: {
+        margin: 0,
+        justifyContent: "flex-end",
+    },
+    modalView: {
+        borderTopRightRadius: 10,
+        borderTopLeftRadius: 10,
+        backgroundColor: Colors.white,
+        paddingTop: 15,
+        paddingBottom: 20
+    },
     container: {
+        paddingRight: 15,
+        paddingLeft: 15,
+        paddingTop: 15,
         flex: 1,
-        backgroundColor: '#fff',
+        alignItems: "stretch",
+        backgroundColor: Colors.lightBlack,
     },
-    titleContainer: {
-        padding: 10,
+    form: {
+        paddingTop: 20
     },
-    titleLabel: {
-        fontSize: styleConstants.fontLarge,
-        marginBottom: 8
+    textInput: {
+        backgroundColor: Colors.grey,
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingTop: 15,
+        paddingBottom: 15,
+        marginBottom: 20,
+        marginTop: 10,
     },
-    titleInput: {
-        borderColor: Colors.lightGrey,
-        fontSize: styleConstants.fontLarge,
-        borderWidth: 1,
-        borderRadius: 4,
-        padding: 8
-    },
-    tagContainer: {
-        alignItems: "flex-start"
-    },
-    tag: {
-        marginLeft: 5,
-        marginRight: 5,
+    text: {
         color: Colors.white,
-        fontSize: 16
+        fontSize: styleConstants.fontSmall
+    },
+    label: {
+        fontSize: styleConstants.fontMedium
     }
 });
+
+const mapStateToProps = (state) => {
+    const { auth } = state;
+    return auth;
+};
+
+function mapDispatchToProps(dispatch) {
+    return {
+        ...bindActionCreators({ }, dispatch)
+    }
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateMate);

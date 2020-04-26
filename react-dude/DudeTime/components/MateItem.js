@@ -71,7 +71,7 @@ class MateItem extends React.Component {
                     <TagList tags={mate.tags} />
 
                     <View style={[globalStyleSheet.row, styles.container, {marginBottom: 5}]}>                
-                        <Ionicons name="ios-time" size={30} color={Colors.green} style={{marginRight: 10, marginLeft: 2}}/>
+                        <Ionicons name="md-time" size={30} color={Colors.green} style={{marginRight: 10, marginLeft: 2}}/>
                         <Text style={styles.figureText}>{moment(mate.time).format('LLLL')}</Text>
                     </View>
                     <View style={[globalStyleSheet.row, styles.container, {marginBottom: 5}]}>

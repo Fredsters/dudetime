@@ -1,23 +1,17 @@
 
 import React from 'react';
-import { StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import { Asset } from 'expo-asset';
 import { Ionicons } from '@expo/vector-icons';
-import AppNavigator from './navigation/AppNavigator';
+import BaseApp from "./components/BaseApp";
 import { Provider } from 'react-redux'
+import { persistStore} from 'redux-persist';
 import { PersistGate } from 'redux-persist/lib/integration/react';
-import store from "./redux/store";
-import { persistStore } from 'redux-persist';
-import Colors from './constants/Colors';
+import store, {persistor} from "./redux/store";
 /*
 Reactotron.configure({ host: '192.168.0.241' })
     .useReactNative();*/
-
-
-const persistor = persistStore(store);
-
 export default class App extends React.Component {
 
     componentDidMount() {
@@ -43,14 +37,7 @@ export default class App extends React.Component {
                 // todo persistaGate can get loading screen
                 <Provider store={store}>
                     <PersistGate persistor={persistor}>
-                        <View style={styles.container}>
-                            <StatusBar barStyle="light-content" />
-                            <AppNavigator
-                                screenProps={{
-                                    mateList: { "hello": "some data" },
-                                    persistor: persistor
-                                }} />
-                        </View>
+                        <BaseApp/>
                     </PersistGate>
                 </Provider>
             );
@@ -85,10 +72,3 @@ export default class App extends React.Component {
         this.setState({ isLoadingComplete: true });
     };
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.grey,
-    },
-});

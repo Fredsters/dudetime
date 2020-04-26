@@ -18,7 +18,7 @@ const DudeHeader = ({navigation}) => {
                     source={{ uri: user.picturePath }}
                 />
             </TouchableOpacity>
-            <CreateButton outerStyles={{top: createButtonOffset, right: 20}} onPress={()=>navigation.navigate("CreateMates")} />
+            <CreateButton outerStyles={{top: createButtonOffset, right: 20}} onPress={()=>navigation.navigate("CreateMate")} />
         </View>
     );
 };

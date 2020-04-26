@@ -47,7 +47,7 @@ const NavStack = createStackNavigator({
               };
           }
     },
-    CreateMates: CreateMate,
+    CreateMate: CreateMate,
     Profile: Profile
 });
 

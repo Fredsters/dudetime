@@ -103,6 +103,8 @@ class Profile extends React.Component {
                         <Text style={[styles.text, styles.label]}>Name:</Text>
                         <TextInput selectionColor={Colors.green} style={[styles.textInput, styles.text]} autoCompleteType="off" 
                             autoCorrect={false} textContentType='givenName' 
+                            placeholder="What's your Name?"
+                            placeholderTextColor={Colors.lightGrey}
                             defaultValue={this.state.userName}
                             returnKeyType='done'
                             onChangeText={(userName)=>this.setState({userName})}
@@ -114,6 +116,8 @@ class Profile extends React.Component {
                             selectionColor={Colors.green} style={[styles.textInput, styles.text]} 
                             autoCompleteType="off" autoCorrect={false} keyboardType="phone-pad" 
                             returnKeyType='done'
+                            placeholder="Can I have your number?"
+                            placeholderTextColor={Colors.lightGrey}
                             textContentType='telephoneNumber' defaultValue={this.state.phoneNumber}
                             onChangeText={(phoneNumber)=>this.setState({phoneNumber})}
                             />

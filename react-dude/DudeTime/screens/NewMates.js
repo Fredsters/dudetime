@@ -10,6 +10,10 @@ import CreateButton from '../components/CreateButton';
 
 class NewMates extends React.Component {
 
+    componentDidMount() {
+        this.props.navigation.navigate("CreateMate");
+    }
+
     static navigationOptions = {
         tabBarLabel: "News"
     };
@@ -26,7 +30,6 @@ class NewMates extends React.Component {
             <View style={styles.container}>
                 <MateList mates={mates}/>
                 <Button title="load Mates" onPress={this.props.fetchMates} />
-                {/* <CreateButton/> */}
             </View>
         );
     }
