@@ -8,28 +8,23 @@ const styles = StyleSheet.create({
         marginRight: 10,
         color: Colors.white,
         fontSize: styleConstants.fontMedium
-    },
-    container: {
-        marginBottom: 15
     }
 });
 
-const TagList = ({tags}) => {
+const TagList = ({tags, style}) => {
     if (tags) {
         return (
-            <View style={[styles.container, globalStyleSheet.row]}>
+            <View style={[globalStyleSheet.row, style]}>
                 {tags.map((item, key) => {
-                        return (
-                            <Text style={styles.tag} key={key}>{item}</Text>
-                        )
-                    }
+                    return (
+                        <Text style={styles.tag} key={key}>{item}</Text>
+                    )}
                 )}
             </View>
         );
     } else {
         return (
-            <View style={globalStyleSheet.row}>
-            </View>
+            <View style={style}/>
         );
     }
 };

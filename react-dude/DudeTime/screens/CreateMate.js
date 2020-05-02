@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Text, StyleSheet, TextInput, View, TouchableOpacity } from 'react-native';
+import { Button, Text, StyleSheet, TextInput, View, TouchableOpacity, KeyboardAvoidingView, ScrollView  } from 'react-native';
 import { connect } from "react-redux";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
@@ -8,20 +8,28 @@ import { styleConstants, globalStyleSheet } from '../Style';
 import Colors from '../constants/Colors.js';
 import moment from 'moment';
 import 'moment/min/locales.min';
+import TagList from '../components/TagList';
 import { Ionicons, Entypo } from '@expo/vector-icons'
 
 //var RCTNetworking = require("RCTNetworking");
 
+const minDate = new Date();
+minDate.setHours(0,0,0,0);
 class CreateMate extends React.Component {
     constructor(props) {
         super(props);
+        this.tagInput = React.createRef();
+        this.scrollView = React.createRef();
         this.state = {
             title: "",
+            tagText: "",
             mode: null,
             date: new Date(),
             modalVisible: false,
             showDate: false,
-            showTime: false
+            showTime: false,
+            tags: [],
+            location: ""
         }
     }
 
@@ -32,10 +40,29 @@ class CreateMate extends React.Component {
     }
 
     setDate (event, date) {
-        if(date > new Date()) {
+        if(date > minDate) {
             this.setState({date});   
         }
     };
+
+    onTagKeyPress(event, isDone) {
+        if(event.nativeEvent.key === " " || isDone) {
+            const tags = this.state.tags;
+            tags.push("#"+this.state.tagText);
+            this.tagInput.current.clear();
+            this.setState({tags: tags, tagText: ""});
+        }
+    }
+
+    setTagText(tagText) {
+        if(!tagText.endsWith(" ")) {
+            this.setState({tagText});
+        }
+    }
+
+    scrollToView() {
+        this.scrollView.current.scrollToEnd();
+    }
 
     static navigationOptions = {
         headerStyle: {
@@ -62,13 +89,14 @@ class CreateMate extends React.Component {
     render() {
 
         return (
-            <View style={styles.container}>
-                <View style={styles.form}>
+            // <View style={styles.container}>
+                <KeyboardAvoidingView style={{ ...styles.container}} behavior="padding" enabled keyboardVerticalOffset={80}>
+                <ScrollView ref={this.scrollView} style={styles.form} showsVerticalScrollIndicator={false}>
                     <View>            
                         <Text style={[styles.text, styles.label]}>Title:</Text>
                         <TextInput selectionColor={Colors.green} style={[styles.textInput, styles.text]} autoCompleteType="off" 
-                            autoCorrect={false}
                             placeholderTextColor={Colors.lightGrey}
+                            autoCorrect={false}
                             placeholder="Give your new Mate a nice title"
                             defaultValue={this.state.title}
                             returnKeyType='done'
@@ -101,7 +129,39 @@ class CreateMate extends React.Component {
                             <Ionicons style={[styles.iconStyle, {top: 19}]} name="md-time" size={30} color={Colors.green} />
                         </TouchableOpacity>
                     </View>
-                </View>
+                    <View>         
+                        <Text style={[styles.text, styles.label]}>Town:</Text>
+                        <View>
+                            <TextInput selectionColor={Colors.green} style={[styles.textInput, styles.text]}
+                                placeholderTextColor={Colors.lightGrey}
+                                autoCorrect={false}
+                                placeholder="Select a Location"
+                                defaultValue={this.state.location}
+                                returnKeyType='done'
+                                onChangeText={(location)=>this.setState({location})}
+                            />
+                            <Ionicons style={[styles.iconStyle, {top: 19}]} name="ios-pin" size={30} color={Colors.green} />
+                        </View>
+                    </View>
+                    <View style={{marginBottom: 300}}>         
+                        <Text style={[styles.text, styles.label, {marginBottom: 10}]}>Tags:</Text>
+                        <View>
+                            <TagList tags={this.state.tags} />
+                            <TextInput selectionColor={Colors.green} style={[styles.textInput, styles.text, ]} autoCompleteType="off"
+                                ref={this.tagInput}
+                                autoCorrect={false}
+                                placeholderTextColor={Colors.lightGrey}
+                                placeholder="Add tags (Press space for new tag)"
+                                returnKeyType='done'
+                                value={this.state.tagText}
+                                onFocus={()=>this.scrollToView()}
+                                onKeyPress={(event)=>this.onTagKeyPress(event)}
+                                onChangeText={(tagText)=>this.setTagText(tagText)}
+                                onSubmitEditing={(event)=>this.onTagKeyPress(event, true)}
+                            />
+                        </View>
+                    </View>
+                </ScrollView>
                 <Modal       
                     animationType="slide"
                     visible={this.state.modalVisible}
@@ -122,12 +182,14 @@ class CreateMate extends React.Component {
                             is24Hour={true}
                             minuteInterval={15}
                             display="spinner"
-                            minimumDate={this.state.mode === 'date' ? new Date() : null}
+                            minimumDate={minDate}
                             onChange={this.setDate.bind(this)}
                         />
                     </View>
                 </Modal>
-            </View>
+                </KeyboardAvoidingView>
+            
+            // </View>
 
         );
     }
