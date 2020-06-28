@@ -1,14 +1,29 @@
 import React from 'react';
-import { Text, View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { Text, Animated, View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux'
 import Colors from "../constants/Colors";
 import RoundedPic from './RoundedPic';
 import CreateButton from './CreateButton';
 
 const deviceWidth = Dimensions.get('window').width;
-const createButtonOffset = Dimensions.get('window').height - 120;
+const deviceHeight = Dimensions.get('window').height;
+const ButtonPosVisible = deviceHeight - 100;
+const createButtonOffset = new Animated.Value(ButtonPosVisible);
+
 const DudeHeader = ({navigation}) => {
-    user = useSelector(state => state.auth.user);
+    const user = useSelector(state => state.auth.user);
+    const showCreateButton = useSelector(state => state.ui.createButtonShow)
+    if(showCreateButton) {
+        Animated.timing(createButtonOffset, {
+            toValue: ButtonPosVisible,
+            duration: 150
+        }).start();
+    } else {
+        Animated.timing(createButtonOffset, {
+            toValue: deviceHeight,
+            duration: 150
+        }).start();
+    }
 
     return (
         <View style={styles.header}>
@@ -18,7 +33,7 @@ const DudeHeader = ({navigation}) => {
                     source={{ uri: user.picturePath }}
                 />
             </TouchableOpacity>
-            <CreateButton outerStyles={{top: createButtonOffset, right: 20}} onPress={()=>navigation.navigate("CreateMate")} />
+    <CreateButton outerStyles={{top: createButtonOffset, right: 20}} onPress={()=>navigation.navigate("CreateMate")} /> 
         </View>
     );
 };

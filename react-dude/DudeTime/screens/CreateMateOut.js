@@ -3,7 +3,7 @@ import { Button, StyleSheet, Text, View, ScrollView, TextInput } from 'react-nat
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
 import { createMate } from "../redux/MateActions";
-import { fetchUserContacts } from "../redux/AuthAction";
+import { fetchUserContacts } from "../redux/AuthActions";
 import DudePicker from '../components/DudePicker';
 import i18n from "../constants/i18n";
 import Colors from '../constants/Colors';

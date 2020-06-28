@@ -7,7 +7,7 @@ const UserSchema = new Schema({
     picturePath: String,
     phoneNumber: {type: String, required: true},
     contacts: [{type: ObjectId, ref: 'User'}],
-    nodeAuthId: {type: String, required: true}
+    nodeAuthId: {type: String, required: false}
 });
 
 UserSchema.set('toJSON', {

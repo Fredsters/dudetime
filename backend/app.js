@@ -53,7 +53,7 @@ router
     .get("/currentuser", user.getCurrentUser)
     .get('/users/contacts', user.getUserContacts)
     .patch('/users/contacts', user.updateUserContacts)
-    .post('/users', user.handleNewUser)
+    .post('/users', user.onNewUserSave)
     .patch('/users', user.updateUser)
     .patch('/users/profilePicture', user.updateUserPicture)
     .get('/mates', mate.getMates)

@@ -1,4 +1,5 @@
 import {root} from "../constants/network"
+import { serverFetch } from "../network/server"
 
 
 // export function createDummyMate() {
@@ -24,19 +25,21 @@ export function fetchMates() {
 }
 
 
-export function createMate() {
-    return dispatch => {
+export function createMate(mate) {
+    return async (dispatch, getState) => {
         dispatch(matesBegin());
-        return fetch(`${root}/mates`, {
-            method: "POST"
-        })
-            .then(handleErrors)
-            .then(res => res.json())
+        return serverFetch(`${root}/mates`, 'POST', {...mate, owner: getState().auth.user.id})
             .then(json => {
-                dispatch(createMateSuccess(json.mate));
-                return json.mate;
+                dispatch(createMateSuccess(json));
+                return json;
             })
             .catch(error => dispatch(matesFailure(error)));
+    };
+}
+
+export function resetMateCreate() {
+    return (dispatch) => {
+        dispatch(mateReset()); 
     };
 }
 
@@ -54,6 +57,11 @@ export const MATES_FAILURE = 'MATES_FAILURE';
 export const ACCEPT_MATE = 'ACCEPT_MATE';
 export const CREATE_MATE = 'CREATE_MATE';
 export const MATE_DUMMY = 'MATE_DUMMY';
+export const MATE_RESET = 'MATE_RESET';
+
+export const mateReset = () => ({
+    type: MATE_RESET
+});
 
 export const matesBegin = () => ({
     type: MATES_BEGIN

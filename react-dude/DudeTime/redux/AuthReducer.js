@@ -9,7 +9,7 @@ import {
     UPDATE_USER_SUCCESS,
     USER_BEGIN,
     USER_FAILURE
-} from './AuthAction';
+} from './AuthActions';
 
 const initialState = {
     user: {},

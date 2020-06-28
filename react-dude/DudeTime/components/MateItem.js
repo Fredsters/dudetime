@@ -18,7 +18,7 @@ import AcceptArea from "../components/AcceptArea";
 
 const source = getDummyImage();
 
-class MateItem extends React.Component {
+class MateItem extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -119,7 +119,8 @@ const styles = StyleSheet.create({
     },
     mateItem : {
         backgroundColor: Colors.lightBlack,
-        overflow: "hidden"
+        overflow: "hidden",
+        marginBottom: 10
     },
     figures: {
         justifyContent: 'space-between'

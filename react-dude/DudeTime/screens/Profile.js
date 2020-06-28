@@ -3,7 +3,7 @@ import { Button, Text, StyleSheet, TextInput, View } from 'react-native';
 import { connect } from "react-redux";
 import colors from "../constants/Colors.js"
 import { bindActionCreators } from 'redux';
-import { newUser, storeAuthInfo, updateProfilePicture, updateUser, clearUser, updateUserContacts } from "../redux/AuthAction";
+import { newUser, storeAuthInfo, updateProfilePicture, updateUser, clearUser, updateUserContacts } from "../redux/AuthActions";
 import { globalStyleSheet, styleConstants } from '../Style';
 import { Google } from "expo-google-app-auth";
 import * as Contacts from 'expo-contacts';
@@ -30,29 +30,74 @@ class Profile extends React.Component {
             picturePath: this.props.user.picturePath,
             phoneNumber: this.props.user.phoneNumber
         };
+        this.contacts = [];
     }
 
-    static navigationOptions = {
-        headerStyle: {
-            backgroundColor: Colors.grey,
-            shadowColor: 'transparent'
-        },
-        title: "Profile",
-        headerTintColor: Colors.green,
-        headerBackTitle: "Cancel",
-        headerTitleStyle: {
-            color: Colors.white,
-            fontWeight: 'bold',
-            fontSize: styleConstants.fontMedium
-        },
-        headerRight: () => (
-            <Button
-            onPress={() => alert("save")}
-            title="Save"
-            color={Colors.green}
-            />
-        )
-      };
+    static navigationOptions = ({navigation}) => {
+        return {
+            headerStyle: {
+                backgroundColor: Colors.grey,
+                shadowColor: 'transparent'
+            },
+            title: "Profile",
+            headerTintColor: Colors.green,
+            headerBackTitle: "Cancel",
+            headerTitleStyle: {
+                color: Colors.white,
+                fontWeight: 'bold',
+                fontSize: styleConstants.fontMedium
+            },
+            headerRight: () => (
+                <Button
+                onPress={navigation.getParam('saveUser')}
+                title="Save"
+                color={Colors.green}
+                />
+            )
+        }
+    };
+
+    componentDidMount () {
+        this.props.navigation.setParams({ saveUser: this.onSaveUser });
+        this.retrieveContacts();
+    }
+
+    onSaveUser = async () => {
+        if(this.state.userName === "") {
+            alert("Fuck yo, I need your name");
+            return;
+        }
+        if(this.state.phoneNumber === "") {
+            alert("Fuck yo, I need your number");
+            return;
+        }
+        if(this.contacts.length === 0 ) {
+            //do something
+        } else {
+            this.props.newUser({
+                userName: this.state.userName,
+                picturePath: this.state.picturePath,
+                phoneNumber: this.state.phoneNumber,
+                contacts: this.contacts,
+                // idToken: this.idToken,
+                // authId: this.authId
+            });
+        }
+
+    };
+
+    retrieveContacts = async () => {
+        const { data } = await Contacts.getContactsAsync();
+        const contacts = data.map(contact => {
+            return contact.phoneNumbers && contact.phoneNumbers.map(number => {
+                return {
+                    "countryCode": number.countryCode,
+                    "number": number.digits
+                }
+            }).flat();
+        }).flat().filter(number => !!number);
+        this.contacts = contacts;
+    };
 
     pickImage = async () => {
         const {
@@ -81,6 +126,10 @@ class Profile extends React.Component {
         if (this.props.user && this.props.user.id) {
             this.props.updateProfilePicture({ picturePath: imageUrl });
         }
+    };
+
+    purgePersistor = async () => {
+        await this.persistor.purge();
     };
 
     render() {
@@ -123,6 +172,7 @@ class Profile extends React.Component {
                             />
                     </View>
                 </View>
+                <Button onPress={this.purgePersistor} title="purge persistor"></Button>
             </View>
         );
     }
@@ -243,10 +293,6 @@ login = async () => {
     }
 };
 
-purgePersistor = async () => {
-    this.persistor.purge();
-};
-
 retrieveContacts = async () => {
     const { data } = await Contacts.getContactsAsync();
     const contacts = data.map(contact => {
@@ -297,19 +343,6 @@ _pickImage = async () => {
         if (!pickerResult.cancelled) {
             this.uploadImage(pickerResult.uri);
         }
-    }
-};
-
-uploadImage = async (localImageUri) => {
-    const phoneImage = await phone.retrieveImage(localImageUri);
-    const imageUrl = await myFirebase.uploadImage(phoneImage);
-    phoneImage.close();
-    //todo store image directly in mongodb when user exists
-    this.setState({ picture: imageUrl });
-    this.setState({ picturePath: imageUrl });
-
-    if (this.props.user && this.props.user.id) {
-        this.props.updateProfilePicture({ picturePath: imageUrl });
     }
 };
 

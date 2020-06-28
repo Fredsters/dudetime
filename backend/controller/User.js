@@ -102,33 +102,27 @@ exports.updateUserPicture = async (ctx) => {
     ctx.body = user;
 };
 
-exports.handleNewUser = async (ctx) => {
+exports.onNewUserSave = async (ctx) => {
     console.log("create User");
-    //todo maybe add current location
-    //todo do the contact to user mapping
-    // if (!ctx.request.body.userName) {
-    //     ctx.request.body.userName = "userName " + util.getRandom(100);
-    //     // ctx.request.body.phoneNumber = "phoneNumber " + util.getRandom(100000);
-    // }
 
-    let user = null;
-    if (ctx.session.userId) {
-        user = await User.findById(ctx.session.userId);
-    }
-    if (!user && ctx.request.body.nodeAuthId) {
-        user = await User.findOne({nodeAuthId: ctx.request.body.nodeAuthId});
-    }
-    if (!user) {
-        const contactIds = await mapContactsToUsers(ctx.request.body.contacts);
-
-        user = await User.create({
-            userName: ctx.request.body.userName,
-            picturePath: ctx.request.body.picturePath,
-            phoneNumber: ctx.request.body.phoneNumber,
-            contacts: contactIds,
-            nodeAuthId: ctx.request.body.nodeAuthId,
+    const contactIds = await mapContactsToUsers(ctx.request.body.contacts);
+    let user = await User.findOne({phoneNumber: ctx.request.body.phoneNumber});
+    if(user) {
+        user = await User.findOneAndUpdate({_id: user.id}, {picturePath: ctx.request.body.picturePath, contacts: contactIds, userName: ctx.request.body.userName}, {
+            new: true,
+            useFindAndModify: false
         });
+        ctx.body = user;
+        return;
     }
+
+    user = await User.create({
+        userName: ctx.request.body.userName,
+        picturePath: ctx.request.body.picturePath,
+        phoneNumber: ctx.request.body.phoneNumber,
+        contacts: contactIds,
+        // nodeAuthId: ctx.request.body.nodeAuthId,
+    });
 
     if (!user) {
         ctx.throw(500, "Failed to create user");
