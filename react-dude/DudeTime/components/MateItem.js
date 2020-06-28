@@ -9,7 +9,6 @@ import { Ionicons, Entypo } from '@expo/vector-icons'
 import moment from 'moment';
 import Enum from "../constants/Enum";
 import 'moment/min/locales.min';
-//import AcceptSlider from './AcceptSlider';
 import Colors from "../constants/Colors";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
@@ -68,7 +67,7 @@ class MateItem extends React.PureComponent {
                   
     
                     <Text style={[styles.title, {marginTop: 5}]}>Grillen und Chillen bis die Wecker klingeln</Text>
-                    <TagList tags={mate.tags} />
+                    <TagList tags={mate.tags} style={[{marginBottom: 5}]} />
 
                     <View style={[globalStyleSheet.row, styles.container, {marginBottom: 5}]}>                
                         <Ionicons name="md-time" size={30} color={Colors.green} style={{marginRight: 10, marginLeft: 2}}/>

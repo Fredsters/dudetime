@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { fetchMates } from "../redux/MateActions";
 import { connect } from "react-redux";
+import { toggleCreateButton } from "../redux/UiActions";
 import { bindActionCreators } from 'redux';
 import Colors from "../constants/Colors";
 import MateList from '../components/MateList';
@@ -11,6 +12,10 @@ class AcceptedMates extends React.Component {
     static navigationOptions = {
         tabBarLabel: "Dudecepted"
     };
+
+    onScrollDirectionChange(isUpwards) {
+        this.props.toggleCreateButton(isUpwards);
+    }
 
     render() {
         const { error, loading, mates } = this.props.mate;
@@ -22,7 +27,7 @@ class AcceptedMates extends React.Component {
         // }
         return (
             <View style={styles.container}>
-                <MateList mates={mates}/>
+                <MateList mates={mates} onScrollDirectionChange={this.onScrollDirectionChange.bind(this)}/>
                 <Button title="load Mates" onPress={this.props.fetchMates} />
             </View>
         );
@@ -36,7 +41,7 @@ const mapStateToProps = (state) => {
 
 function mapDispatchToProps(dispatch) {
     return {
-        ...bindActionCreators({ fetchMates }, dispatch)
+        ...bindActionCreators({ fetchMates, toggleCreateButton }, dispatch)
     }
 }
 

@@ -112,7 +112,6 @@ class CreateMate extends React.Component {
     render() {
 
         return (
-            // <View style={styles.container}>
                 <KeyboardAvoidingView style={{ ...styles.container}} behavior="padding" enabled keyboardVerticalOffset={80}>
                 <ScrollView ref={this.scrollView} style={styles.form} showsVerticalScrollIndicator={false}>
                     <View>            
@@ -214,9 +213,6 @@ class CreateMate extends React.Component {
                     </View>
                 </Modal>
                 </KeyboardAvoidingView>
-            
-            // </View>
-
         );
     }
 }

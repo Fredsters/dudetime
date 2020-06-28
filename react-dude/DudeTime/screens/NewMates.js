@@ -18,27 +18,12 @@ class NewMates extends React.Component {
     }
 
     componentDidMount(props) {
-        //this.props.navigation.navigate("CreateMate");
         console.log(this.props);
         console.log("componentDidMount");
         this.props.fetchMates();
     }
 
-    // static getDerivedStateFromProps(props) {
-    //     console.log(this.props);
-    //     console.log("getDerivedStateFromProps");
-    //     return {};
-    // }
-
-    // shouldComponentUpdate(props) {
-    //     console.log(this.props);
-    //     console.log("shouldComponentUpdate");
-    //     //this.props.navigation.navigate("CreateMate");
-    //     return true;
-    // }
-
     onScrollDirectionChange(isUpwards) {
-        console.log("isUpwards: " + isUpwards);
         this.props.toggleCreateButton(isUpwards);
     }
 
