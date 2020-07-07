@@ -27,19 +27,23 @@ const onStatusChanged = (newStatus) => {
     if(newStatus === Enum.MateStatus.Accepted) {
         Animated.parallel([
             Animated.spring(checkSize, {
-                toValue: 56
+                toValue: 56,
+                useNativeDriver: false
             }),
             Animated.spring(crossSize, {
-                toValue: 18
+                toValue: 18,
+                useNativeDriver: false
             })
         ]).start();
     } else if(newStatus === Enum.MateStatus.Declined) {
         Animated.parallel([
             Animated.spring(crossSize, {
-                toValue: 56
+                toValue: 56,
+                useNativeDriver: false
             }),
             Animated.spring(checkSize, {
-                toValue: 18
+                toValue: 18,
+                useNativeDriver: false
             })
         ]).start();
     }

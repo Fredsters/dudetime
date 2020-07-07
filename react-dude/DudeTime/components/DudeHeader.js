@@ -16,12 +16,14 @@ const DudeHeader = ({navigation}) => {
     if(showCreateButton) {
         Animated.timing(createButtonOffset, {
             toValue: ButtonPosVisible,
-            duration: 150
+            duration: 150,
+            useNativeDriver: false
         }).start();
     } else {
         Animated.timing(createButtonOffset, {
             toValue: deviceHeight,
-            duration: 150
+            duration: 150,
+            useNativeDriver: false
         }).start();
     }
 

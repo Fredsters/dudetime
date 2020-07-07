@@ -9,6 +9,7 @@ exports.getMates = async (ctx) => {
     //todo only query needed fields
     //read mates where current user is in receivers (also show rejected/accepted)
     const {open, accepted, rejected, own} = ctx.query;
+    const userId = ctx.session.userId;
     let mates = await Mate.find({}).populate('owner').populate('participants').exec();
     if (!mates) {
         throw new Error("There was an error retrieving your mates.")

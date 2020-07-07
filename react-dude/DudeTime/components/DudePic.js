@@ -13,12 +13,14 @@ const DudePic = ({ source, size, style, active }) => {
                 setPicZIndex(2);
                 Animated.timing(picScale, {
                     toValue: 1,
-                    duration: 100
+                    duration: 100,
+                    useNativeDriver: false
                 }).start();
             } else {
                 Animated.timing(picScale, {
                     toValue: 0.25,
-                    duration: 100                
+                    duration: 100,
+                    useNativeDriver: false       
                 }).start();
                 setPicZIndex(1);
             }

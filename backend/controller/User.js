@@ -114,6 +114,7 @@ exports.onNewUserSave = async (ctx) => {
             useFindAndModify: false
         });
         ctx.body = user;
+        ctx.session.userId = user.id;
         return;
     }
 
@@ -129,6 +130,7 @@ exports.onNewUserSave = async (ctx) => {
     if (!user) {
         ctx.throw(500, "Failed to create user");
     } else {
+        ctx.session.userId = user.id;
         ctx.body = user;
     }
 };
