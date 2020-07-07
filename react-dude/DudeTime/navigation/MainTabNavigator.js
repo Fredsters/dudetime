@@ -12,7 +12,7 @@ import AcceptedMates from '../screens/AcceptedMates';
 
 const TabNavigator = createMaterialTopTabNavigator({
     NewMates: NewMates,
-    AcceptedMates: AcceptedMates,
+    AcceptedMates: AcceptedMates
   }, {
       backBehavior: "initialRoute",
       tabBarOptions: {

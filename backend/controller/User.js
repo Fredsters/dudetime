@@ -104,11 +104,12 @@ exports.updateUserPicture = async (ctx) => {
 
 exports.onNewUserSave = async (ctx) => {
     console.log("create User");
+    const data = ctx.request.body;
 
-    const contactIds = await mapContactsToUsers(ctx.request.body.contacts);
-    let user = await User.findOne({phoneNumber: ctx.request.body.phoneNumber});
+    const contactIds = await mapContactsToUsers(data.contacts);
+    let user = await User.findOne({phoneNumber: data.phoneNumber});
     if(user) {
-        user = await User.findOneAndUpdate({_id: user.id}, {picturePath: ctx.request.body.picturePath, contacts: contactIds, userName: ctx.request.body.userName}, {
+        user = await User.findOneAndUpdate({_id: user.id}, {picturePath: data.picturePath, contacts: contactIds, userName: data.userName, expoPushToken: data.expoPushToken}, {
             new: true,
             useFindAndModify: false
         });
@@ -117,11 +118,12 @@ exports.onNewUserSave = async (ctx) => {
     }
 
     user = await User.create({
-        userName: ctx.request.body.userName,
-        picturePath: ctx.request.body.picturePath,
-        phoneNumber: ctx.request.body.phoneNumber,
+        userName: data.userName,
+        picturePath: data.picturePath,
+        phoneNumber: data.phoneNumber,
         contacts: contactIds,
-        // nodeAuthId: ctx.request.body.nodeAuthId,
+        expoPushToken: data.expoPushToken
+        // nodeAuthId: data.nodeAuthId,
     });
 
     if (!user) {
@@ -132,23 +134,7 @@ exports.onNewUserSave = async (ctx) => {
 };
 
 exports.updateUser = async (ctx) => {
-    console.log("update User");
-    const users = await User.find({});
-    const user = await User.findOneAndUpdate({_id: ctx.session.userId},
-        {
-            userName: ctx.request.body.userName,
-            phoneNumber: ctx.request.body.phoneNumber
-        }, {
-            new: true,
-            fields: ["userName", "phoneNumber"],
-            useFindAndModify: false
-        });
 
-    if (!user) {
-        ctx.throw(500, "Failed to update user");
-    } else {
-        ctx.body = user;
-    }
 };
 
 

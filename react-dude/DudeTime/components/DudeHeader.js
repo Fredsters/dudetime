@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import { Text, Animated, View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux'
 import Colors from "../constants/Colors";
@@ -33,7 +33,7 @@ const DudeHeader = ({navigation}) => {
                     source={{ uri: user.picturePath }}
                 />
             </TouchableOpacity>
-    <CreateButton outerStyles={{top: createButtonOffset, right: 20}} onPress={()=>navigation.navigate("CreateMate")} /> 
+            <CreateButton outerStyles={{top: createButtonOffset, right: 20}} onPress={()=>navigation.navigate("CreateMate")} /> 
         </View>
     );
 };

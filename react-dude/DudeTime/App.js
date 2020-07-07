@@ -9,19 +9,27 @@ import { Provider } from 'react-redux'
 import { persistStore} from 'redux-persist';
 import { PersistGate } from 'redux-persist/lib/integration/react';
 import store, {persistor} from "./redux/store";
-/*
-Reactotron.configure({ host: '192.168.0.241' })
-    .useReactNative();*/
+import { Notifications } from 'expo';
+import { Vibration, Button } from 'react-native';
 export default class App extends React.Component {
-
-    componentDidMount() {
-        //Reactotron.connect()
-    }
-
     state = {
         isLoadingComplete: false,
     };
 
+    componentDidMount() {
+        // Handle notifications that are received or selected while the app
+        // is open. If the app was closed and then opened by tapping the
+        // notification (rather than just tapping the app icon to open it),
+        // this function will fire on the next tick after the app starts
+        // with the notification data.
+        //todo handle the authorization here
+        Notifications.addListener(this._handleNotification);
+    }
+    _handleNotification = notification => {
+        Vibration.vibrate();
+        console.log(notification);
+        this.setState({ notification: notification });
+    };
     render() {
        // Reactotron.log('hello from AppContainer');
         if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {

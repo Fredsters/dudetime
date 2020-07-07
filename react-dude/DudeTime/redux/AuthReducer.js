@@ -31,7 +31,9 @@ export default function authReducer(state = initialState, action) {
                     id: action.user._id,
                     phoneNumber: action.user.phoneNumber,
                     userName: action.user.userName,
-                    picturePath: action.user.picturePath
+                    picturePath: action.user.picturePath,
+                    contacts: action.user.contacts,
+                    expoPushToken: action.user.expoPushToken
                 }
             };
         case USER_FAILURE:
@@ -45,7 +47,10 @@ export default function authReducer(state = initialState, action) {
                 user: {
                     ...state.user,
                     phoneNumber: action.user.phoneNumber,
-                    userName: action.user.userName
+                    userName: action.user.userName,
+                    picturePath: action.user.picturePath,
+                    contacts: action.user.contacts,
+                    expoPushToken: action.user.expoPushToken
                 }
             };
         case UPDATE_USER_IMAGE_SUCCESS:

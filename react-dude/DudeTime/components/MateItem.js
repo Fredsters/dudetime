@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Image, Slider, StyleSheet, Text, View, TouchableOpacity, PanResponder, Animated } from 'react-native';
 import PicList from './PicList';
 import TagList from './TagList';

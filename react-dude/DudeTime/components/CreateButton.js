@@ -1,13 +1,14 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import Colors from "../constants/Colors";
 import { Entypo } from '@expo/vector-icons'
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 const CreateButton = ({outerStyles, onPress}) => {
     return (
-        <TouchableOpacity style={[styles.createButton, outerStyles]} onPress={onPress}>
+        <AnimatedTouchableOpacity style={[styles.createButton, outerStyles]} onPress={onPress}>
             <Entypo name="plus" size={30} color={Colors.white} style={{paddingTop: 2}} />
-        </TouchableOpacity >
+        </AnimatedTouchableOpacity >
     );
 };
 const styles = StyleSheet.create({

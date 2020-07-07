@@ -10,8 +10,10 @@ const MateSchema = new Schema({
     time: {type: Date, required: true},
     createTime: {type: Date, default: Date.now},
     owner: {type: ObjectId, ref: 'User'},
+    participants: [{type: ObjectId, ref: 'User'}],
     receivers: {type: [ObjectId], required: true, ref: 'User'},
-    participants: [{type: ObjectId, ref: 'User'}]
+    acceptedBy: {type: [ObjectId], required: true, ref: 'User'},
+    rejectedBy: {type: [ObjectId], required: true, ref: 'User'},
 });
 
 module.exports = mongoose.model("Mate", MateSchema);

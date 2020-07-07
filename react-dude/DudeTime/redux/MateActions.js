@@ -1,26 +1,34 @@
 import {root} from "../constants/network"
 import { serverFetch } from "../network/server"
 
+function addURIParams(URI, params) {
+    if(Object.keys(params).length === 0) {
+        return URI;
+    }
+    let isFirstParameter = true;
+    for (const [key, value] of Object.entries(params)) {
+        if(isFirstParameter) {
+            URI = `${URI}?`;
+            isFirstParameter = false;
+        } else {
+            URI = `${URI}&`;
+        }
+        URI = `${URI}${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+    }
+    return URI
+}
 
-// export function createDummyMate() {
-//     return dispatch => {
-//         dispatch(mateDummy("Theresa"));
-//     };
-// }
-
-export function fetchMates() {
-    return dispatch => {
+export function fetchMates(params) {
+    return async (dispatch) => {
         dispatch(matesBegin());
-        return fetch(`${root}/mates`, {
-            method: "GET"
-        })
-            .then(handleErrors)
-            .then(res => res.json())
-            .then(json => {
-                dispatch(fetchMatesSuccess(json));
-                //return json.mates;
-            })
-            .catch(error => dispatch(matesFailure(error)));
+        const URI = addURIParams(`${root}/mates`, params);
+        try {
+            const response = await serverFetch(URI, "GET");
+            dispatch(fetchMatesSuccess(response));
+            return response;
+        } catch (error) {
+            dispatch(matesFailure(error));
+        }
     };
 }
 

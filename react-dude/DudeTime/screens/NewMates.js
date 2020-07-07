@@ -13,14 +13,16 @@ class NewMates extends React.Component {
     constructor(props) {
         super(props);
         this.toast = React.createRef();
-
-        this.state = {};
+        this.state = {showAccepted: false, showRejected: false};
     }
 
     componentDidMount(props) {
-        console.log(this.props);
-        console.log("componentDidMount");
-        this.props.fetchMates();
+        this.props.fetchMates({
+            open: true,
+            rejected: this.state.showRejected,
+            accepted: this.state.showAccepted,
+            own: false
+        });
     }
 
     onScrollDirectionChange(isUpwards) {
@@ -28,14 +30,13 @@ class NewMates extends React.Component {
     }
 
     componentDidUpdate(props) {
-        console.log(this.props);
         if(this.props.mate.type === "CREATE_MATE") {
             this.toast.current.show('Mate Created!', 2000);
         }
     }
 
     static navigationOptions = {
-        tabBarLabel: "News"
+        tabBarLabel: "Open Mates"
     };
 
     render() {

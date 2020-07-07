@@ -7,6 +7,8 @@ import { newUser, storeAuthInfo, updateProfilePicture, updateUser, clearUser, up
 import { globalStyleSheet, styleConstants } from '../Style';
 import { Google } from "expo-google-app-auth";
 import * as Contacts from 'expo-contacts';
+import { Notifications } from 'expo';
+import Constants from 'expo-constants';
 
 import { clientId } from "../constants/network";
 import myFirebase from "../network/firebase";
@@ -59,8 +61,38 @@ class Profile extends React.Component {
 
     componentDidMount () {
         this.props.navigation.setParams({ saveUser: this.onSaveUser });
+        this.registerForPushNotificationsAsync();
         this.retrieveContacts();
     }
+
+    registerForPushNotificationsAsync = async () => {
+        if (Constants.isDevice) {
+          const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+          let finalStatus = existingStatus;
+          if (existingStatus !== 'granted') {
+            const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+            finalStatus = status;
+          }
+          if (finalStatus !== 'granted') {
+            alert('Failed to get push token for push notification!');
+            return;
+          }
+          token = await Notifications.getExpoPushTokenAsync();
+          console.log(token);
+          this.expoPushToken = token;
+        } else {
+          alert('Must use physical device for Push Notifications');
+        }
+    
+        if (Platform.OS === 'android') {
+          Notifications.createChannelAndroidAsync('default', {
+            name: 'default',
+            sound: true,
+            priority: 'max',
+            vibrate: [0, 250, 250, 250],
+          });
+        }
+      };
 
     onSaveUser = async () => {
         if(this.state.userName === "") {
@@ -73,17 +105,17 @@ class Profile extends React.Component {
         }
         if(this.contacts.length === 0 ) {
             //do something
-        } else {
-            this.props.newUser({
-                userName: this.state.userName,
-                picturePath: this.state.picturePath,
-                phoneNumber: this.state.phoneNumber,
-                contacts: this.contacts,
-                // idToken: this.idToken,
-                // authId: this.authId
-            });
-        }
-
+        } 
+        this.props.newUser({
+            userName: this.state.userName,
+            picturePath: this.state.picturePath,
+            phoneNumber: this.state.phoneNumber,
+            contacts: this.contacts,
+            expoPushToken: this.expoPushToken
+            // idToken: this.idToken,
+            // authId: this.authId
+        });
+            
     };
 
     retrieveContacts = async () => {
@@ -240,12 +272,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(Profile);
 
 
 /*
-
-async componentDidMount() {
-
-    this.retrieveContacts(); //Todo contacts in backend needs to be updated regularly
-
-    
+async componentDidMount() {    
     // firebase.auth().onAuthStateChanged(async (user) => {
     //     if (user) {
     //         this.setState({
@@ -290,59 +317,6 @@ login = async () => {
     } catch (e) {
         console.log("Error authenticating the user", e);
         alert("The authentication failed, dammit!!");
-    }
-};
-
-retrieveContacts = async () => {
-    const { data } = await Contacts.getContactsAsync();
-    const contacts = data.map(contact => {
-        return contact.phoneNumbers && contact.phoneNumbers.map(number => {
-            return {
-                "countryCode": number.countryCode,
-                "number": number.digits
-            }
-        }).flat();
-    }).flat().filter(number => !!number);
-    this.contacts = contacts;
-};
-
-saveUser = () => {
-    if (this.props.user && this.props.user.id) {
-        this.props.updateUser({
-            userName: this.state.userName,
-            phoneNumber: this.state.phoneNumber,
-            contacts: this.contacts,
-            idToken: this.idToken,
-            authId: this.authId
-
-        });
-    } else {
-        this.props.newUser({
-            userName: this.state.userName,
-            picturePath: this.state.picturePath,
-            phoneNumber: this.state.phoneNumber,
-            contacts: this.contacts,
-            idToken: this.idToken,
-            authId: this.authId
-        });
-    }
-};
-
-_pickImage = async () => {
-    const {
-        status: cameraRollPerm
-    } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-
-    // only if user allows permission to camera roll
-    if (cameraRollPerm === 'granted') {
-        let pickerResult = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: true,
-            aspect: [4, 3],
-            mediaTypes: "Images"
-        });
-        if (!pickerResult.cancelled) {
-            this.uploadImage(pickerResult.uri);
-        }
     }
 };
 
