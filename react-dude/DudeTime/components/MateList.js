@@ -24,6 +24,9 @@ const MateList = (props) => {
         }
     }
 
+    console.log("MateList")
+    console.log(props.mates);
+
     const renderMateItem = ({ item }) => (<MateItem
         item={item}
     />);

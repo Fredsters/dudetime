@@ -18,13 +18,27 @@ function addURIParams(URI, params) {
     return URI
 }
 
-export function fetchMates(params) {
+export function fetchOpenMates(params) {
     return async (dispatch) => {
         dispatch(matesBegin());
         const URI = addURIParams(`${root}/mates`, params);
         try {
             const response = await serverFetch(URI, "GET");
-            dispatch(fetchMatesSuccess(response));
+            dispatch(fetchOpenMatesSuccess(response));
+            return response;
+        } catch (error) {
+            dispatch(matesFailure(error));
+        }
+    };
+}
+
+export function fetchClosedMates(params) {
+    return async (dispatch) => {
+        dispatch(matesBegin());
+        const URI = addURIParams(`${root}/mates`, params);
+        try {
+            const response = await serverFetch(URI, "GET");
+            dispatch(fetchClosedMatesSuccess(response));
             return response;
         } catch (error) {
             dispatch(matesFailure(error));
@@ -45,6 +59,18 @@ export function createMate(mate) {
     };
 }
 
+export function acceptMate(data) {
+    return async (dispatch, getState) => {
+        dispatch(matesBegin());
+        try {
+            const response = await serverFetch(`${root}/acceptMate`, "POST", data);
+            dispatch(acceptedMate(response));
+        } catch (error) {
+            dispatch(matesFailure(error));
+        }
+    };
+}
+
 export function resetMateCreate() {
     return (dispatch) => {
         dispatch(mateReset()); 
@@ -60,7 +86,8 @@ function handleErrors(response) {
 }
 
 export const MATES_BEGIN = 'MATES_BEGIN';
-export const FETCH_MATES_SUCCESS = 'FETCH_MATES_SUCCESS';
+export const FETCH_OPEN_MATES_SUCCESS = 'FETCH_OPEN_MATES_SUCCESS';
+export const FETCH_CLOSED_MATES_SUCCESS = 'FETCH_CLOSED_MATES_SUCCESS';
 export const MATES_FAILURE = 'MATES_FAILURE';
 export const ACCEPT_MATE = 'ACCEPT_MATE';
 export const CREATE_MATE = 'CREATE_MATE';
@@ -75,23 +102,22 @@ export const matesBegin = () => ({
     type: MATES_BEGIN
 });
 
-export const fetchMatesSuccess = mates => ({
-    type: FETCH_MATES_SUCCESS, mates
+export const fetchOpenMatesSuccess = openMates => ({
+    type: FETCH_OPEN_MATES_SUCCESS, openMates
+});
+
+export const fetchClosedMatesSuccess = closedMates => ({
+    type: FETCH_CLOSED_MATES_SUCCESS, closedMates
 });
 
 export const matesFailure = error => ({
     type: MATES_FAILURE, error
 });
 
-export const acceptMate = mateId => ({
-    type: ACCEPT_MATE, mateId
+export const acceptedMate = mate => ({
+    type: ACCEPT_MATE, mate
 });
 
 export const createMateSuccess = mate => ({
     type: CREATE_MATE, mate
 });
-
-
-// export const mateDummy = data => ({
-//     type: MATE_DUMMY, data
-// });

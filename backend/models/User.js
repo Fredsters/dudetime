@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongooseLeanId = require('mongoose-lean-id');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
@@ -10,6 +11,8 @@ const UserSchema = new Schema({
     nodeAuthId: {type: String, required: false},
     expoPushToken: {type: String}
 });
+
+UserSchema.plugin(mongooseLeanId);
 
 UserSchema.set('toJSON', {
     transform: function(doc, ret, options) {

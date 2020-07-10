@@ -130,6 +130,7 @@ exports.onNewUserSave = async (ctx) => {
     if (!user) {
         ctx.throw(500, "Failed to create user");
     } else {
+        ctx.status = 200;
         ctx.session.userId = user.id;
         ctx.body = user;
     }

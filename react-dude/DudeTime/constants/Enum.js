@@ -1,7 +1,5 @@
-export default {
-    MateStatus : {
-        Open: "OPEN",
-        Declined: "DECLINED",
-        Accepted: "ACCEPTED"
-    }
-};
+export const MateStatus = {
+    Open: "OPEN",
+    Rejected: "REJECTED",
+    Accepted: "ACCEPTED"
+}

@@ -2,7 +2,7 @@ import React from 'react';
 import {Animated, View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { globalStyleSheet, styleConstants } from '../Style';
 import Colors from "../constants/Colors";
-import Enum from "../constants/Enum";
+import {MateStatus} from "../constants/Enum";
 import { Entypo } from '@expo/vector-icons'
 const AnimatedEntypo = Animated.createAnimatedComponent(Entypo);
 const AcceptArea = (props) => {
@@ -10,10 +10,10 @@ const AcceptArea = (props) => {
 const [status, setStatus] = React.useState(props.status);
 let crossSizeInitValue;
 let checkSizeInitValue;
-if(props.status === Enum.MateStatus.Accepted) {
+if(props.status === MateStatus.Accepted) {
     crossSizeInitValue = new Animated.Value(18);
     checkSizeInitValue = new Animated.Value(56);
-} else if(props.status === Enum.MateStatus.Declined) {
+} else if(props.status === MateStatus.Rejected) {
     crossSizeInitValue = new Animated.Value(56);
     checkSizeInitValue = new Animated.Value(18);
 } else {
@@ -24,7 +24,7 @@ const crossSize = React.useRef(crossSizeInitValue).current;
 const checkSize = React.useRef(checkSizeInitValue).current;
 
 const onStatusChanged = (newStatus) => {
-    if(newStatus === Enum.MateStatus.Accepted) {
+    if(newStatus === MateStatus.Accepted) {
         Animated.parallel([
             Animated.spring(checkSize, {
                 toValue: 56,
@@ -35,7 +35,7 @@ const onStatusChanged = (newStatus) => {
                 useNativeDriver: false
             })
         ]).start();
-    } else if(newStatus === Enum.MateStatus.Declined) {
+    } else if(newStatus === MateStatus.Rejected) {
         Animated.parallel([
             Animated.spring(crossSize, {
                 toValue: 56,
@@ -52,12 +52,12 @@ const onStatusChanged = (newStatus) => {
 }
 
   return (
-    <View style={[globalStyleSheet.row, styles.acceptArea, {borderColor: status === Enum.MateStatus.Accepted ? Colors.green : status === Enum.MateStatus.Declined ? Colors.red : Colors.lightBlack}]}>
-        <TouchableOpacity style={styles.button} onPress={()=>onStatusChanged(Enum.MateStatus.Declined)}>
+    <View style={[globalStyleSheet.row, styles.acceptArea, {borderColor: status === MateStatus.Accepted ? Colors.green : status === MateStatus.Rejected ? Colors.red : Colors.lightBlack}]}>
+        <TouchableOpacity style={styles.button} onPress={()=>onStatusChanged(MateStatus.Rejected)}>
             <AnimatedEntypo name="cross" size={crossSize} color={Colors.red} style={{fontSize: crossSize, ...styles.icon}} />
         </TouchableOpacity>
-        <Text style={styles.acceptText}>{(status === Enum.MateStatus.Accepted) ? 'I\'m In!' : status === Enum.MateStatus.Declined ? 'Nope!' : ''}</Text>
-        <TouchableOpacity style={styles.button} onPress={()=>onStatusChanged(Enum.MateStatus.Accepted)}>
+        <Text style={styles.acceptText}>{(status === MateStatus.Accepted) ? 'I\'m In!' : status === MateStatus.Rejected ? 'Nope!' : ''}</Text>
+        <TouchableOpacity style={styles.button} onPress={()=>onStatusChanged(MateStatus.Accepted)}>
             <AnimatedEntypo name="check" size={checkSize} color={Colors.green} style={{fontSize: checkSize, ...styles.icon}}/>
         </TouchableOpacity>
     </View>

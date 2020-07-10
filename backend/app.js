@@ -57,7 +57,8 @@ router
     .patch('/users', user.updateUser)
     .patch('/users/profilePicture', user.updateUserPicture)
     .get('/mates', mate.getMates)
-    .post('/mates', mate.createMate);
+    .post('/mates', mate.createMate)
+    .post('/acceptMate', mate.acceptMate);
 
 // .post('/userImage', user.uploadUserImage, user.updateUserPicture);
 

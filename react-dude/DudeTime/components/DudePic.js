@@ -26,10 +26,9 @@ const DudePic = ({ source, size, style, active }) => {
             }
         }
     };
-
     return (
         <TouchableOpacity activeOpacity={1} style={{ height: size, width: size, alignItems: "center", justifyContent: "center", ...style, zIndex: picZIndex}} onPress={onPress}>
-            <Animated.Image style={{ width: scaleSize, height: scaleSize, borderRadius: radius, margin: 5, transform: [{scale: picScale}]}} source={source} />
+            {source && <Animated.Image style={{ width: scaleSize, height: scaleSize, borderRadius: radius, margin: 5, transform: [{scale: picScale}]}} source={source} />}
         </TouchableOpacity>
     );
 };

@@ -1,7 +1,8 @@
-import {ACCEPT_MATE, CREATE_MATE, FETCH_MATES_SUCCESS, MATES_BEGIN, MATES_FAILURE, MATE_RESET} from './MateActions';
+import {ACCEPT_MATE, CREATE_MATE, FETCH_OPEN_MATES_SUCCESS, FETCH_CLOSED_MATES_SUCCESS, MATES_BEGIN, MATES_FAILURE, MATE_RESET} from './MateActions';
 
 const initialState = {
-    mates: [],
+    openMates: [],
+    closedMates: [],
     loading: true,
     error: null
 };
@@ -20,48 +21,41 @@ export default function mateReducer(state = initialState, action) {
                 loading: true,
                 error: null
             };
-
-        case FETCH_MATES_SUCCESS:
+        case FETCH_OPEN_MATES_SUCCESS:
             return {
                 ...state,
                 loading: false,
-                mates: action.mates
+                openMates: action.openMates
             };
-
-        // case MATE_DUMMY:
-        //     return {
-        //         ...state,
-        //         dummy: action.data,
-        //         dummy2: "Hallo Fred"
-        //     };
-
+        case FETCH_CLOSED_MATES_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                closedMates: action.closedMates
+            };
         case MATES_FAILURE:
             return {
                 ...state,
                 loading: false,
                 error: action.error,
-                mates: []
             };
         case CREATE_MATE:
             return {
                 ...state,
                 loading: false,
-                mateCreated: true,
-                mates: [...state.mates, action.mate]
+                mateCreated: true
             };
         case ACCEPT_MATE:
-
-            const {mates} = state;
-
-            let mate = mates.find((mate) => {
-                return action.mateId === mate._id;
-            });
-            //todo add current user
-            //mate.participants.push(new user)
-            mate.hasUpdate = true;
+            const {closedMates, openMates} = state;
+            
+            state.openMates = openMates.filter(item => item.id !== action.mate._id);
+            const newClosedMates = [...closedMates.filter(item => item.id !== action.mate._id), action.mate];
+            console.log(newClosedMates);
+            newClosedMates.sort((a,b) => b.time < a.time);
+            state.closedMates = newClosedMates;
             return {
                 ...state,
-                bla: "bla"
+                loading: false
             };
         default:
             // ALWAYS have a default case in a reducer

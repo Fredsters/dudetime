@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Slider, StyleSheet, Text, View, TouchableOpacity, PanResponder, Animated } from 'react-native';
+import { StyleSheet, Text, View} from 'react-native';
 import PicList from './PicList';
 import TagList from './TagList';
 import DudePic from "./DudePic";
@@ -7,13 +7,13 @@ import { getDummyImage } from "../util/Util";
 import { globalStyleSheet, styleConstants } from '../Style';
 import { Ionicons, Entypo } from '@expo/vector-icons'
 import moment from 'moment';
-import Enum from "../constants/Enum";
 import 'moment/min/locales.min';
 import Colors from "../constants/Colors";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
 import { acceptMate } from '../redux/MateActions';
 import AcceptArea from "../components/AcceptArea";
+import {MateStatus} from "../constants/Enum";
 
 const source = getDummyImage();
 
@@ -21,9 +21,6 @@ class MateItem extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.state = {
-            status : "new"
-        }
     }
 
     componentDidMount() {
@@ -35,22 +32,16 @@ class MateItem extends React.PureComponent {
     handleConfirmed(confirmation) {
         console.log("handleConfirmed");
         console.log(confirmation)
-        //this.setState({status: confirmation});
-    
+        this.setState({status: confirmation});
+        this.props.acceptMate({
+            status: confirmation,
+            id: this.props.item.id
+        });
     }
 
     render() {
-        
-        let mate = this.props.item;
-        mate.owner = {
-            userName: "Frederik"
-        };
-        mate.participants = [
-            "Georg",
-            "janis",
-            "lars",
-            "Theresa"
-        ]
+        const mate = this.props.item;
+        //todo use actual data
         return (
             <View style={styles.mateItem}>
                 <View style={[styles.mateItemContent]}>
@@ -66,26 +57,26 @@ class MateItem extends React.PureComponent {
                         }    
                   
     
-                    <Text style={[styles.title, {marginTop: 5}]}>Grillen und Chillen bis die Wecker klingeln</Text>
+                    <Text style={[styles.title, {marginTop: 5}]}>{mate.title}</Text>
                     <TagList tags={mate.tags} style={[{marginBottom: 5}]} />
 
                     <View style={[globalStyleSheet.row, styles.container, {marginBottom: 5}]}>                
                         <Ionicons name="md-time" size={30} color={Colors.green} style={{marginRight: 10, marginLeft: 2}}/>
-                        <Text style={styles.figureText}>{moment(mate.time).format('LLLL')}</Text>
+                        <Text style={styles.figureText}>{moment(mate.time).format('llll')}</Text>
                     </View>
-                    <View style={[globalStyleSheet.row, styles.container, {marginBottom: 5}]}>
+                    {!!mate.location && <View style={[globalStyleSheet.row, styles.container, {marginBottom: 5}]}>
                         <Ionicons name="ios-pin" size={30} width={30} color={Colors.green} style={{marginRight: 13, marginLeft: 5}}/>
                         <Text style={[styles.figureText, styles.marginRight]}>{mate.location}</Text>
                         <Text style={styles.figureText}> {mate.subLocation}</Text>
-                    </View>
+                    </View>}
 
-                    <View style={[globalStyleSheet.row, styles.container]}>                
+                    {mate.accpetedBy && mate.accpetedBy.length > 0 && <View style={[globalStyleSheet.row, styles.container]}>                
                         <Entypo name="check" size={30} width={30} color={Colors.green} style={{marginRight: 5}}/>  
-                        <PicList dudes={mate.participants}/> 
-                    </View>
+                        <PicList dudes={mate.accpetedBy}/> 
+                    </View> }
                     
                 </View>
-                <AcceptArea status={Enum.MateStatus.Open} onStatusChangedHandler={this.handleConfirmed.bind(this)}/>
+                <AcceptArea status={mate.status} onStatusChangedHandler={this.handleConfirmed.bind(this)}/>
             </View>
         );
     }
